@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#12355B">
+  <title>Laboratory Reports — RoomSync</title>
+  <link rel="icon" type="image/png" href="../assets/logos/logo.png">
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/role-theme.css">
+  <style>
+    .report-form,.equipment-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-3)}
+    .report-form .field,.equipment-form .field{margin:0}
+    .field-wide,.form-actions{grid-column:1/-1}
+    .form-actions{display:flex;gap:var(--space-2);align-items:center}
+    .report-actions{display:flex;gap:var(--space-2);align-items:center;flex-wrap:wrap}
+    .report-character-count{text-align:right;font-variant-numeric:tabular-nums}
+    .report-review-form{min-width:180px}
+    .report-review-field{display:flex;flex-direction:column;gap:6px;font-size:var(--fs-xs);font-weight:600}
+    .report-review-field select,.report-review-field textarea{width:100%;min-width:150px}
+    .report-review-form > small{display:block;margin-top:5px}
+    .report-review-form .report-character-count{text-align:right;font-variant-numeric:tabular-nums}
+    @media(max-width:700px){.report-form,.equipment-form{grid-template-columns:1fr}.field-wide,.form-actions{grid-column:auto}}
+  </style>
+</head>
+<body class="role-page">
+  <div id="app">
+    <!-- header injected -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-user" data-user-only hidden>
+        <div class="sidebar-user-avatar" aria-hidden="true"></div>
+        <div class="sidebar-user-info">
+          <div class="sidebar-user-name" data-user-name>User</div>
+          <span class="badge info small sidebar-role-pill" data-role-label></span>
+        </div>
+      </div>
+      <nav aria-label="Main Navigation">
+        <ul>
+          <li data-user-only><a href="dashboard.html">Overview</a></li>
+          <li data-user-only><a href="rooms.html">Rooms</a></li>
+          <li data-user-only><a href="labs.html">Laboratories</a></li>
+          <li data-user-only><a href="calendar.html">Calendar</a></li>
+          <li data-can-reserve hidden><a href="reservation.html">New Reservation</a></li>
+          <li data-can-reserve hidden><a href="my-reservations.html">My Reservations</a></li>
+          <li data-report-access hidden><a href="reports.html">Lab Reports</a></li>
+          <li data-admin-only hidden><a href="admin.html">Admin</a></li>
+        </ul>
+        <ul>
+          <li data-user-only><a href="profile.html">Profile</a></li>
+          <li data-user-only><a href="#" data-logout>Logout</a></li>
+        </ul>
+      </nav>
+    </aside>
+    <main class="container with-sidebar">
+      <header class="page-header">
+        <div class="page-title-block">
+          <span class="eyebrow">Laboratories · Maintenance</span>
+          <h1>Laboratory Reports</h1>
+          <p class="lead">Report computer and equipment issues, then track their review and resolution.</p>
+        </div>
+      </header>
+
+      <section class="card mt-lg" id="report-form-section" hidden>
+        <span class="section-label">Lab Tech</span>
+        <h2>Submit an issue report</h2>
+        <p class="muted">Choose the affected laboratory, then describe the issue clearly so it can be reviewed and resolved.</p>
+        <form id="report-form" class="report-form mt">
+          <label class="field">Laboratory
+            <select name="roomId" required><option value="">Select a laboratory…</option></select>
+            <small class="muted">Only active laboratories are available.</small>
+          </label>
+          <label class="field">Computer / Equipment
+            <select name="equipmentId" disabled><option value="">Select a laboratory first</option></select>
+            <small class="muted" id="report-equipment-help">Choose a laboratory to see its equipment, or report a general issue.</small>
+          </label>
+          <label class="field">Issue type
+            <input name="issueType" maxlength="100" required placeholder="e.g. Hardware, network, software">
+            <small class="muted">Briefly categorize the problem, such as hardware or network.</small>
+          </label>
+          <label class="field">Severity
+            <select name="severity" required>
+              <option value="low">Low</option>
+              <option value="medium" selected>Medium</option>
+              <option value="high">High</option>
+              <option value="critical">Critical</option>
+            </select>
+            <small class="muted">Choose the level of impact on laboratory use.</small>
+          </label>
+          <label class="field field-wide">Description
+            <textarea name="description" maxlength="10000" required rows="5" aria-describedby="report-description-help report-description-count" placeholder="Include what happened, when it started, who or what is affected, and any troubleshooting already completed."></textarea>
+            <small class="muted" id="report-description-help">Avoid including passwords or other sensitive information.</small>
+            <small class="muted report-character-count" id="report-description-count" aria-live="polite">0 / 10000 characters</small>
+          </label>
+          <div class="form-actions">
+            <button class="btn primary" type="submit" disabled>Submit report</button>
+            <span class="muted" id="report-form-status" role="status" aria-live="polite"></span>
+          </div>
+        </form>
+      </section>
+
+      <section class="card mt-lg" aria-labelledby="reports-title">
+        <span class="section-label">History</span>
+        <h2 id="reports-title">Reported issues</h2>
+        <div id="reports-list" class="table-wrap mt" aria-live="polite" aria-busy="true">
+          <table class="table" aria-hidden="true"><tbody>
+            <tr><td><span class="skeleton skeleton-line" style="width:78%"></span></td><td><span class="skeleton skeleton-line" style="width:65%"></span></td><td><span class="skeleton skeleton-line" style="width:42%"></span></td><td><span class="skeleton skeleton-line" style="width:58%"></span></td><td><span class="skeleton skeleton-line" style="width:50%"></span></td><td><span class="skeleton skeleton-line" style="width:70%"></span></td></tr>
+            <tr><td><span class="skeleton skeleton-line" style="width:66%"></span></td><td><span class="skeleton skeleton-line" style="width:72%"></span></td><td><span class="skeleton skeleton-line" style="width:48%"></span></td><td><span class="skeleton skeleton-line" style="width:60%"></span></td><td><span class="skeleton skeleton-line" style="width:44%"></span></td><td><span class="skeleton skeleton-line" style="width:62%"></span></td></tr>
+          </tbody></table>
+        </div>
+      </section>
+
+      <section class="card mt-lg" id="equipment-management" hidden>
+        <span class="section-label">Admin</span>
+        <h2>Manage laboratory equipment</h2>
+        <form id="equipment-form" class="equipment-form mt">
+          <input type="hidden" name="id">
+          <label class="field">Laboratory
+            <select name="roomId" required><option value="">Select a laboratory…</option></select>
+          </label>
+          <label class="field">Equipment code
+            <input name="code" maxlength="50" required>
+          </label>
+          <label class="field">Name
+            <input name="name" maxlength="150" required>
+          </label>
+          <label class="field">Status
+            <select name="status">
+              <option value="operational">Operational</option>
+              <option value="maintenance">Maintenance</option>
+              <option value="retired">Retired</option>
+            </select>
+          </label>
+          <label class="field field-wide">Description
+            <textarea name="description" maxlength="10000" rows="2"></textarea>
+          </label>
+          <div class="form-actions">
+            <button class="btn primary" id="equipment-save" type="submit">Add equipment</button>
+            <button class="btn ghost" id="equipment-cancel" type="button" hidden>Cancel edit</button>
+          </div>
+        </form>
+        <div id="equipment-list" class="table-wrap mt" aria-live="polite" aria-busy="true">
+          <table class="table" aria-hidden="true"><tbody>
+            <tr><td><span class="skeleton skeleton-line" style="width:72%"></span></td><td><span class="skeleton skeleton-line" style="width:60%"></span></td><td><span class="skeleton skeleton-line" style="width:46%"></span></td><td><span class="skeleton skeleton-line" style="width:42%"></span></td></tr>
+            <tr><td><span class="skeleton skeleton-line" style="width:64%"></span></td><td><span class="skeleton skeleton-line" style="width:70%"></span></td><td><span class="skeleton skeleton-line" style="width:52%"></span></td><td><span class="skeleton skeleton-line" style="width:38%"></span></td></tr>
+          </tbody></table>
+        </div>
+      </section>
+    </main>
+    <!-- footer injected -->
+  </div>
+  <script src="../js/components.js"></script>
+  <script src="../js/api.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/reports.js"></script>
+</body>
+</html>

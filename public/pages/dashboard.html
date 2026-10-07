@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#12355B">
+  <title>Dashboard — RoomSync</title>
+  <link rel="icon" type="image/png" href="../assets/logos/logo.png">
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/role-theme.css">
+  <style>
+    html{scroll-behavior:smooth;scroll-padding-top:68px}
+    html,body{overflow-x:hidden}
+    body{position:relative}
+    body::before,body::after{
+      content:"";position:fixed;border-radius:50%;filter:blur(80px);
+      opacity:.28;pointer-events:none;z-index:0;
+      animation:blob-move 16s ease-in-out infinite alternate;
+    }
+    body::before{width:360px;height:360px;background:var(--hero-blob-1);top:-140px;right:-100px}
+    body::after{width:300px;height:300px;background:var(--hero-blob-2);bottom:-120px;left:-90px;animation-direction:alternate-reverse;animation-duration:18s}
+    #app{position:relative;z-index:1}
+    #app > main.container{min-height:calc(100vh - 68px)}
+    .stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:var(--space-4);margin-bottom:var(--space-5)}
+    @keyframes blob-move{to{transform:translate(-24px,16px) scale(1.05)}}
+
+    @media (prefers-reduced-motion: reduce){
+      *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
+      html{scroll-behavior:auto}
+      .hero-entrance{opacity:1;transform:none}
+      .blob,body::before,body::after{animation:none !important}
+    }
+
+    .hero-entrance{opacity:0;transform:translateY(16px)}
+    .hero-entrance.visible{animation:hero-up .7s var(--ease) both}
+    .hero-entrance.d1{animation-delay:.05s}.hero-entrance.d2{animation-delay:.12s}
+    .hero-entrance.d3{animation-delay:.2s}.hero-entrance.d4{animation-delay:.28s}
+    .hero-entrance.d5{animation-delay:.36s}.hero-entrance.d6{animation-delay:.44s}
+    @keyframes hero-up{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+  </style>
+</head>
+<body class="role-page">
+  <div id="app">
+    <!-- header injected -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-user" data-user-only hidden>
+        <div class="sidebar-user-avatar" aria-hidden="true"></div>
+        <div class="sidebar-user-info">
+          <div class="sidebar-user-name" data-user-name>User</div>
+          <span class="badge info small sidebar-role-pill" data-role-label></span>
+        </div>
+      </div>
+      <nav aria-label="Main Navigation">
+        <ul>
+          <li data-user-only><a href="dashboard.html">Overview</a></li>
+          <li data-user-only><a href="rooms.html">Rooms</a></li>
+          <li data-user-only><a href="labs.html">Laboratories</a></li>
+          <li data-user-only><a href="calendar.html">Calendar</a></li>
+          <li data-can-reserve hidden><a href="reservation.html">New Reservation</a></li>
+          <li data-can-reserve hidden><a href="my-reservations.html">My Reservations</a></li>
+          <li data-report-access hidden><a href="reports.html">Lab Reports</a></li>
+          <li data-admin-only hidden><a href="admin.html">Admin</a></li>
+        </ul>
+        <ul>
+          <li data-user-only><a href="profile.html">Profile</a></li>
+          <li data-user-only><a href="#" data-logout>Logout</a></li>
+        </ul>
+      </nav>
+    </aside>
+    <main class="container with-sidebar">
+      <header class="page-header hero-entrance d1">
+        <div class="page-title-block">
+          <span class="eyebrow">Home · Overview</span>
+          <h1>Welcome back</h1>
+          <p class="lead">A quick snapshot of your reservations, available rooms, and recent activity.</p>
+        </div>
+        <div class="page-actions">
+          <a class="btn primary" href="reservation.html" data-can-reserve hidden>New Reservation</a>
+        </div>
+      </header>
+
+      <section class="stat-row hero-entrance d2">
+        <div class="stat-card"><small>Today’s Bookings</small><div class="stat-num" id="stat-today"><span class="skeleton skeleton-stat" aria-hidden="true"></span></div></div>
+        <div class="stat-card"><small>This Week</small><div class="stat-num" id="stat-week"><span class="skeleton skeleton-stat" aria-hidden="true"></span></div></div>
+        <div class="stat-card"><small id="stat-pending-label">Pending</small><div class="stat-num" id="stat-pending"><span class="skeleton skeleton-stat" aria-hidden="true"></span></div></div>
+        <div class="stat-card"><small>Active Rooms</small><div class="stat-num" id="stat-rooms"><span class="skeleton skeleton-stat" aria-hidden="true"></span></div></div>
+      </section>
+
+      <section class="grid-3">
+        <div class="card hero-entrance d3">
+          <span class="section-label">Agenda</span>
+          <h3>Upcoming Room Schedule</h3>
+          <ul id="upcoming-list" class="list" aria-busy="true">
+            <li aria-hidden="true"><span class="skeleton skeleton-line" style="width:70%"></span></li>
+            <li aria-hidden="true"><span class="skeleton skeleton-line" style="width:58%"></span></li>
+            <li aria-hidden="true"><span class="skeleton skeleton-line" style="width:82%"></span></li>
+          </ul>
+        </div>
+        <div class="card hero-entrance d4">
+          <span class="section-label">Inventory</span>
+          <h3>Rooms Summary</h3>
+          <ul class="summary-list" id="summary-list" aria-busy="true">
+            <li aria-hidden="true"><span class="skeleton skeleton-line" style="width:75%"></span></li>
+            <li aria-hidden="true"><span class="skeleton skeleton-line" style="width:60%"></span></li>
+            <li aria-hidden="true"><span class="skeleton skeleton-line" style="width:68%"></span></li>
+          </ul>
+        </div>
+        <div class="card hero-entrance d5">
+          <span class="section-label">Navigation</span>
+          <h3>Quick Links</h3>
+          <div id="dashboard-quick-links" style="display:flex;gap:8px;flex-wrap:wrap">
+            <a class="btn ghost small" href="rooms.html">Browse rooms</a>
+            <a class="btn ghost small" href="calendar.html">View calendar</a>
+            <a class="btn ghost small" href="reservation.html" data-can-reserve hidden>New reservation</a>
+            <a class="btn ghost small" href="my-reservations.html" data-can-reserve hidden>My reservations</a>
+            <a class="btn ghost small" href="reports.html" data-report-access hidden>Lab reports</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="card mt-lg hero-entrance d6">
+        <span class="section-label">Trail</span>
+        <h3 id="activities-title">Recent Reservation Activity</h3>
+        <div class="table-wrap mt">
+          <table class="table">
+            <thead><tr id="activities-headers"><th id="activities-user-heading">User</th><th id="activities-action-heading">Action</th><th id="activities-when-heading">When</th><th id="activities-status-heading">Status</th></tr></thead>
+            <tbody id="activities-tbody" aria-busy="true">
+              <tr aria-hidden="true"><td><span class="skeleton skeleton-line" style="width:75%"></span></td><td><span class="skeleton skeleton-line" style="width:60%"></span></td><td><span class="skeleton skeleton-line" style="width:80%"></span></td><td><span class="skeleton skeleton-line" style="width:50%"></span></td></tr>
+              <tr aria-hidden="true"><td><span class="skeleton skeleton-line" style="width:65%"></span></td><td><span class="skeleton skeleton-line" style="width:72%"></span></td><td><span class="skeleton skeleton-line" style="width:55%"></span></td><td><span class="skeleton skeleton-line" style="width:45%"></span></td></tr>
+              <tr aria-hidden="true"><td><span class="skeleton skeleton-line" style="width:80%"></span></td><td><span class="skeleton skeleton-line" style="width:58%"></span></td><td><span class="skeleton skeleton-line" style="width:70%"></span></td><td><span class="skeleton skeleton-line" style="width:60%"></span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+    <!-- footer injected -->
+    <!-- modals injected -->
+  </div>
+  <script src="../js/components.js"></script>
+  <script src="../js/api.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/dashboard.js"></script>
+  <script>
+    (function(){
+      var mq=window.matchMedia('(prefers-reduced-motion: reduce)');
+      if(mq.matches){return;}
+      var els=document.querySelectorAll('.hero-entrance');
+      if(!els.length){return;}
+      var run=function(){
+        els.forEach(function(el){el.classList.add('visible');});
+      };
+      if('requestAnimationFrame' in window){
+        requestAnimationFrame(function(){requestAnimationFrame(run);});
+      }else{run();}
+    })();
+  </script>
+</body>
+</html>

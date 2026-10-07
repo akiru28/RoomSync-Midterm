@@ -1,0 +1,350 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#12355B">
+  <title>Admin — RoomSync</title>
+  <link rel="icon" type="image/png" href="../assets/logos/logo.png">
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/role-theme.css">
+  <style>
+    html{scroll-behavior:smooth;scroll-padding-top:68px}
+    html,body{overflow-x:hidden}
+    body{position:relative}
+    body::before,body::after{
+      content:"";position:fixed;border-radius:50%;filter:blur(80px);
+      opacity:.26;pointer-events:none;z-index:0;
+      animation:blob-move 16s ease-in-out infinite alternate;
+    }
+    body::before{width:360px;height:360px;background:var(--hero-blob-1);top:-140px;right:-100px}
+    body::after{width:300px;height:300px;background:var(--hero-blob-2);bottom:-120px;left:-90px;animation-direction:alternate-reverse;animation-duration:18s}
+    #app{position:relative;z-index:1}
+    #app > main.container{min-height:calc(100vh - 68px)}
+    @keyframes blob-move{to{transform:translate(-24px,16px) scale(1.05)}}
+
+    @media (prefers-reduced-motion: reduce){
+      *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
+      html{scroll-behavior:auto}
+      .hero-entrance{opacity:1;transform:none}
+      .blob,body::before,body::after{animation:none !important}
+    }
+
+    .hero-entrance{opacity:0;transform:translateY(16px)}
+    .hero-entrance.visible{animation:hero-up .7s var(--ease) both}
+    .hero-entrance.d1{animation-delay:.05s}.hero-entrance.d2{animation-delay:.12s}
+    .hero-entrance.d3{animation-delay:.2s}
+    @keyframes hero-up{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+    .admin-room-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-3)}
+    .admin-room-form .field,
+    .admin-reservation-form .field{
+      display:flex;flex-direction:column;gap:8px;min-width:0;margin:0;
+      color:var(--text-2);font-size:var(--fs-sm);font-weight:700;letter-spacing:.01em
+    }
+    .admin-room-form .field input:not([type="checkbox"]):not([type="hidden"]),
+    .admin-room-form .field select,
+    .admin-room-form .field textarea,
+    .admin-reservation-form .field input:not([type="checkbox"]):not([type="hidden"]),
+    .admin-reservation-form .field select,
+    .admin-reservation-form .field textarea{
+      width:100%;min-width:0;min-height:46px;padding:11px 13px;
+      border:1px solid var(--border-2);border-radius:11px;
+      background:var(--surface-2);color:var(--text);
+      font-family:inherit;font-size:var(--fs-sm);font-weight:500;line-height:1.4;
+      transition:border-color .18s var(--ease),box-shadow .18s var(--ease),background .18s var(--ease)
+    }
+    .admin-room-form .field input::placeholder,
+    .admin-room-form .field textarea::placeholder,
+    .admin-reservation-form .field input::placeholder,
+    .admin-reservation-form .field textarea::placeholder{color:var(--muted-2)}
+    .admin-room-form .field input:hover,
+    .admin-room-form .field select:hover,
+    .admin-room-form .field textarea:hover,
+    .admin-reservation-form .field input:hover,
+    .admin-reservation-form .field select:hover,
+    .admin-reservation-form .field textarea:hover{border-color:var(--accent)}
+    .admin-room-form .field input:focus-visible,
+    .admin-room-form .field select:focus-visible,
+    .admin-room-form .field textarea:focus-visible,
+    .admin-reservation-form .field input:focus-visible,
+    .admin-reservation-form .field select:focus-visible,
+    .admin-reservation-form .field textarea:focus-visible{
+      outline:none;border-color:var(--accent);background:var(--surface);
+      box-shadow:var(--shadow-focus)
+    }
+    .admin-room-form .field select,
+    .admin-reservation-form .field select{
+      appearance:none;padding-right:40px;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23647891' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat:no-repeat;background-position:right 13px center
+    }
+    .admin-room-form .field textarea,
+    .admin-reservation-form .field textarea{line-height:1.6;resize:vertical}
+    .admin-room-form .field small,
+    .admin-reservation-form .field small{font-size:var(--fs-xs);font-weight:400;letter-spacing:0}
+    .admin-room-form .field:has(input[type="checkbox"]){gap:10px}
+    .admin-room-form .field:has(input[type="checkbox"]) span{
+      display:flex;align-items:center;gap:10px;min-height:46px;
+      padding:10px 13px;border:1px solid var(--border);border-radius:11px;
+      background:var(--surface-2);color:var(--text-2);transition:border-color .18s var(--ease),background .18s var(--ease)
+    }
+    .admin-room-form input[type="checkbox"]{
+      width:18px;height:18px;flex:0 0 auto;margin:0;
+      accent-color:var(--blue-600);cursor:pointer
+    }
+    .admin-room-form .field:has(input[type="checkbox"]):hover span{border-color:var(--border-2)}
+    .admin-room-form .field-wide{grid-column:1/-1}
+    .admin-room-form textarea{min-height:76px;resize:vertical}
+    .admin-room-form-actions,
+    .admin-reservation-form-actions{
+      display:flex;align-items:center;gap:var(--space-2);grid-column:1/-1;
+      padding-top:var(--space-4);border-top:1px solid var(--border)
+    }
+    .admin-room-table td{vertical-align:top}
+    .admin-room-actions{display:flex;gap:6px;flex-wrap:wrap}
+    .admin-reservation-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-3)}
+    .admin-reservation-form .field-wide{grid-column:1/-1}
+    .admin-reservation-form textarea{min-height:72px;resize:vertical}
+    .admin-room-form-actions .btn,
+    .admin-reservation-form-actions .btn{min-height:42px}
+    @media(max-width:700px){
+      .admin-reservation-form,.admin-room-form{grid-template-columns:1fr;gap:var(--space-4)}
+      .admin-reservation-form .field-wide,.admin-room-form .field-wide,
+      .admin-reservation-form-actions,.admin-room-form-actions{grid-column:auto}
+    }
+  </style>
+</head>
+<body class="role-page">
+  <div id="app">
+    <!-- header injected -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-user" data-user-only hidden>
+        <div class="sidebar-user-avatar" aria-hidden="true"></div>
+        <div class="sidebar-user-info">
+          <div class="sidebar-user-name" data-user-name>User</div>
+          <span class="badge info small sidebar-role-pill" data-role-label></span>
+        </div>
+      </div>
+      <nav aria-label="Main Navigation">
+        <ul>
+          <li data-user-only><a href="dashboard.html">Overview</a></li>
+          <li data-user-only><a href="rooms.html">Rooms</a></li>
+          <li data-user-only><a href="labs.html">Laboratories</a></li>
+          <li data-user-only><a href="calendar.html">Calendar</a></li>
+          <li data-can-reserve hidden><a href="reservation.html">New Reservation</a></li>
+          <li data-can-reserve hidden><a href="my-reservations.html">My Reservations</a></li>
+          <li data-report-access hidden><a href="reports.html">Lab Reports</a></li>
+          <li data-admin-only hidden><a href="admin.html">Admin</a></li>
+        </ul>
+        <ul>
+          <li data-user-only><a href="profile.html">Profile</a></li>
+          <li data-user-only><a href="#" data-logout>Logout</a></li>
+        </ul>
+      </nav>
+    </aside>
+    <main class="container with-sidebar">
+      <header class="page-header hero-entrance d1">
+        <div class="page-title-block">
+          <span class="eyebrow">Admin · Management</span>
+          <h1>Administrator Panel</h1>
+          <p class="lead">Review reservations, manage rooms and equipment, administer user accounts, and monitor system activity.</p>
+        </div>
+      </header>
+
+      <section class="card mt-lg" aria-labelledby="reservation-management-title">
+        <span class="section-label">Reservations</span>
+        <h2 id="reservation-management-title">Create or Edit a Reservation</h2>
+        <p class="muted">Reservations created by Admin start as pending. Editing an approved reservation returns it to pending for review.</p>
+        <form id="reservation-form" class="admin-reservation-form mt">
+          <input type="hidden" name="id">
+          <label class="field">Instructor
+            <select name="userId" required><option value="">Select an instructor</option></select>
+          </label>
+          <label class="field">Room
+            <select name="roomId" required><option value="">Select an available room</option></select>
+          </label>
+          <label class="field field-wide">Purpose
+            <input name="purpose" maxlength="255" required>
+          </label>
+          <label class="field field-wide">Program / Section
+            <input name="programSection" maxlength="150" required placeholder="e.g., BSIT 3A">
+          </label>
+          <label class="field">Start
+            <input name="startDate" type="datetime-local" required>
+          </label>
+          <label class="field">End
+            <input name="endDate" type="datetime-local" required>
+          </label>
+          <label class="field">Attendees
+            <input name="attendees" type="number" min="1" step="1" value="1" required>
+          </label>
+          <label class="field field-wide">Notes
+            <textarea name="notes"></textarea>
+          </label>
+          <div class="admin-reservation-form-actions">
+            <button class="btn primary" type="submit" id="reservation-save-btn">Create reservation</button>
+            <button class="btn ghost" type="button" id="reservation-cancel-edit" hidden>Cancel edit</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="grid-2 mt">
+        <div class="card hero-entrance d2">
+          <span class="section-label">Requests</span>
+          <h3>Reservation Requests</h3>
+          <div class="table-wrap mt">
+            <table class="table">
+              <thead><tr><th>Instructor</th><th>Room / Purpose / Program</th><th>When</th><th>Status / Actions</th></tr></thead>
+              <tbody id="pending-tbody" aria-busy="true">
+                <tr aria-hidden="true"><td><span class="skeleton skeleton-line" style="width:72%"></span></td><td><span class="skeleton skeleton-line" style="width:64%"></span></td><td><span class="skeleton skeleton-line" style="width:70%"></span></td><td><span class="skeleton skeleton-line" style="width:55%"></span></td></tr>
+                <tr aria-hidden="true"><td><span class="skeleton skeleton-line" style="width:62%"></span></td><td><span class="skeleton skeleton-line" style="width:72%"></span></td><td><span class="skeleton skeleton-line" style="width:60%"></span></td><td><span class="skeleton skeleton-line" style="width:48%"></span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card hero-entrance d3">
+          <span class="section-label">Controls</span>
+          <h3>Overview &amp; Tools</h3>
+          <p class="muted">Manage reservations, room inventory, laboratory reports, equipment, and user accounts.</p>
+          <p class="muted" id="admin-overview-summary" aria-live="polite" aria-busy="true"><span class="skeleton skeleton-line" style="width:70%"></span></p>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:var(--space-4)">
+            <a class="btn ghost" href="#room-management-title">Manage rooms</a>
+            <a class="btn ghost" href="#user-management-title">Manage users</a>
+            <a class="btn ghost" href="reports.html">Lab reports &amp; equipment</a>
+            <a class="btn primary" href="#reservation-management-title">Create reservation</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="card mt-lg" aria-labelledby="room-management-title">
+        <div class="page-header" style="padding:0 0 var(--space-4)">
+          <div class="page-title-block">
+            <span class="section-label">Inventory</span>
+            <h2 id="room-management-title">Manage Rooms &amp; Equipment</h2>
+            <p class="muted">Create rooms, update room details and equipment, or remove rooms from the inventory.</p>
+          </div>
+        </div>
+        <form id="room-form" class="admin-room-form">
+          <input type="hidden" name="id">
+          <label class="field">Room name
+            <input name="name" maxlength="150" required>
+          </label>
+          <label class="field">Room code
+            <input name="code" maxlength="50" required>
+          </label>
+          <label class="field">Type
+            <select name="type" required>
+              <option value="lecture">Lecture</option>
+              <option value="lab">Laboratory</option>
+              <option value="seminar">Seminar</option>
+              <option value="hall">Hall</option>
+            </select>
+          </label>
+          <label class="field">Capacity
+            <input name="capacity" type="number" min="1" step="1" required>
+          </label>
+          <label class="field field-wide">Location
+            <input name="location" maxlength="200">
+          </label>
+          <label class="field field-wide">Equipment / features <small class="muted">Separate items with commas.</small>
+            <input name="features" placeholder="Projector, Whiteboard, 24 Computers">
+          </label>
+          <label class="field field-wide">Description
+            <textarea name="description" maxlength="2000"></textarea>
+          </label>
+          <label class="field field-wide"><span><input name="isActive" type="checkbox" checked> Available for reservations</span></label>
+          <div class="admin-room-form-actions">
+            <button class="btn primary" type="submit" id="room-save-btn">Add room</button>
+            <button class="btn ghost" type="button" id="room-cancel-edit" hidden>Cancel edit</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="card mt" aria-labelledby="room-list-title">
+        <h3 id="room-list-title">Room Inventory</h3>
+        <div class="table-wrap mt">
+          <table class="table admin-room-table">
+            <thead><tr><th>Room</th><th>Type / Capacity</th><th>Location</th><th>Equipment</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="rooms-tbody" aria-busy="true">
+              <tr aria-hidden="true"><td><span class="skeleton skeleton-line" style="width:75%"></span></td><td><span class="skeleton skeleton-line" style="width:60%"></span></td><td><span class="skeleton skeleton-line" style="width:62%"></span></td><td><span class="skeleton skeleton-line" style="width:55%"></span></td><td><span class="skeleton skeleton-line" style="width:46%"></span></td><td><span class="skeleton skeleton-line" style="width:58%"></span></td></tr>
+              <tr aria-hidden="true"><td><span class="skeleton skeleton-line" style="width:65%"></span></td><td><span class="skeleton skeleton-line" style="width:52%"></span></td><td><span class="skeleton skeleton-line" style="width:70%"></span></td><td><span class="skeleton skeleton-line" style="width:62%"></span></td><td><span class="skeleton skeleton-line" style="width:44%"></span></td><td><span class="skeleton skeleton-line" style="width:52%"></span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card mt-lg" aria-labelledby="user-management-title">
+        <div class="page-header" style="padding:0 0 var(--space-4)">
+          <div class="page-title-block">
+            <span class="section-label">Accounts</span>
+            <h2 id="user-management-title">Manage Users</h2>
+            <p class="muted">Create accounts, update user details and roles, or remove accounts.</p>
+          </div>
+        </div>
+        <form id="user-form" class="admin-room-form">
+          <input type="hidden" name="id">
+          <label class="field">Full name
+            <input name="name" maxlength="150" required>
+          </label>
+          <label class="field">Email
+            <input name="email" type="email" maxlength="150" required>
+          </label>
+          <label class="field">Role
+            <select name="role" required>
+              <option value="student">Student</option>
+              <option value="instructor">Faculty</option>
+              <option value="lab_tech">Lab Technician</option>
+              <option value="admin">Admin</option>
+            </select>
+          </label>
+          <label class="field">Department
+            <input name="department" maxlength="150">
+          </label>
+          <label class="field field-wide">Temporary password
+            <input name="password" type="password" minlength="4" autocomplete="new-password" required>
+            <small class="muted" id="user-password-hint">At least 4 characters. Leave blank while editing to keep the current password.</small>
+          </label>
+          <div class="admin-room-form-actions">
+            <button class="btn primary" type="submit" id="user-save-btn">Create user</button>
+            <button class="btn ghost" type="button" id="user-cancel-edit" hidden>Cancel edit</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="card mt" aria-labelledby="user-list-title">
+        <h3 id="user-list-title">User Accounts</h3>
+        <div class="table-wrap mt">
+          <table class="table admin-room-table">
+            <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Department</th><th>Actions</th></tr></thead>
+            <tbody id="users-tbody" aria-busy="true">
+              <tr aria-hidden="true"><td><span class="skeleton skeleton-line" style="width:72%"></span></td><td><span class="skeleton skeleton-line" style="width:80%"></span></td><td><span class="skeleton skeleton-line" style="width:46%"></span></td><td><span class="skeleton skeleton-line" style="width:65%"></span></td><td><span class="skeleton skeleton-line" style="width:52%"></span></td></tr>
+              <tr aria-hidden="true"><td><span class="skeleton skeleton-line" style="width:62%"></span></td><td><span class="skeleton skeleton-line" style="width:72%"></span></td><td><span class="skeleton skeleton-line" style="width:52%"></span></td><td><span class="skeleton skeleton-line" style="width:70%"></span></td><td><span class="skeleton skeleton-line" style="width:48%"></span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </main>
+    <!-- footer injected -->
+    <!-- modals injected -->
+  </div>
+  <script src="../js/components.js"></script>
+  <script src="../js/api.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/admin.js"></script>
+  <script>
+    (function(){
+      var mq=window.matchMedia('(prefers-reduced-motion: reduce)');
+      if(mq.matches){return;}
+      var els=document.querySelectorAll('.hero-entrance');
+      if(!els.length){return;}
+      var run=function(){
+        els.forEach(function(el){el.classList.add('visible');});
+      };
+      if('requestAnimationFrame' in window){
+        requestAnimationFrame(function(){requestAnimationFrame(run);});
+      }else{run();}
+    })();
+  </script>
+</body>
+</html>

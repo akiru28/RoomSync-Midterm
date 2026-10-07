@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Learn about RoomSync and explore the room and laboratory reservation system's key features.">
+  <meta name="theme-color" content="#12355B">
+  <title>About RoomSync</title>
+  <link rel="icon" type="image/png" href="../assets/logos/logo.png">
+  <link rel="stylesheet" href="../css/main.css">
+  <style>
+    html { scroll-behavior: smooth; scroll-padding-top: 76px; }
+    body { min-height: 100vh; padding-top: 68px; }
+    body::before {
+      content: ""; position: fixed; inset: 0; z-index: -1;
+      background: linear-gradient(180deg, rgba(15,23,42,.82), rgba(15,23,42,.94));
+      pointer-events: none;
+    }
+    body::after {
+      content: ""; position: fixed; inset: 0; z-index: -2;
+      background: url("../assets/images/bg.jpg") center / cover no-repeat;
+      filter: blur(4px) brightness(.72); transform: scale(1.04); pointer-events: none;
+    }
+    .about-nav {
+      position: fixed; inset: 0 0 auto; z-index: 100;
+      background: var(--bg); border-bottom: 1px solid var(--border);
+      box-shadow: var(--shadow-xs);
+    }
+    .about-nav-inner {
+      box-sizing: border-box; width: 100%; height: 67px;
+      margin: 0; padding: 10px var(--space-5);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .about-nav .brand { flex-shrink: 0; }
+    .about-brand-logo { display: block; width: 42px; height: 42px; object-fit: contain; }
+    .about-nav-links { display: flex; align-items: center; gap: 4px; margin-left: auto; }
+    .about-nav-links a {
+      padding: 9px 14px; border-radius: 8px; color: var(--text-2);
+      font-size: var(--fs-sm); text-decoration: none; transition: background .18s var(--ease);
+    }
+    .about-nav-links a:hover { background: var(--surface-2); color: var(--text); }
+    .about-menu-toggle {
+      display: none; margin-left: auto; padding: 8px;
+      color: var(--text); background: transparent; border: 1px solid var(--border);
+      border-radius: 8px; line-height: 1; cursor: pointer;
+    }
+    .about-menu-toggle svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; }
+
+    .about-page { max-width: 1180px; margin: 0 auto; padding: 36px var(--space-5) 64px; }
+    .landing-section { scroll-margin-top: 76px; padding: 32px 0; }
+    .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: stretch; }
+    .about-text, .about-visual {
+      border-radius: var(--radius-xl); padding: 36px;
+    }
+    .about-text {
+      display: flex; flex-direction: column;
+      background: rgba(15,23,42,.58); border: 1px solid rgba(148,163,184,.24);
+      backdrop-filter: blur(14px) saturate(140%);
+    }
+    .section-label {
+      display: inline-block; margin-bottom: 12px; color: #93C5FD;
+      font-size: .72rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+    }
+    .about-text h1 { max-width: 24ch; margin-bottom: 16px; color: #fff; font-size: 1.85rem; line-height: 1.18; }
+    .about-text p { margin-bottom: 16px; color: #CBD5E1; font-size: .98rem; line-height: 1.72; }
+    .about-text p:last-of-type { margin-bottom: 0; }
+    .about-highlights { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); margin-top: 28px; }
+    .about-stat {
+      padding: 18px 14px; border: 1px solid var(--border); border-radius: var(--radius);
+      background: var(--surface); text-align: center;
+    }
+    .about-stat strong {
+      display: block; margin-bottom: 4px; font-size: 1.25rem; line-height: 1.2;
+      background: linear-gradient(120deg, var(--navy-700), var(--blue-600));
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+    }
+    .about-stat span { color: var(--muted); font-size: .78rem; line-height: 1.35; }
+    .about-visual { display: flex; flex-direction: column; background: var(--surface); border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
+    .about-visual h2 { margin-bottom: 20px; font-size: 1.15rem; }
+    .about-flow { display: flex; flex-direction: column; }
+    .about-step { display: flex; align-items: flex-start; gap: 16px; position: relative; padding-bottom: 20px; }
+    .about-step:last-child { padding-bottom: 0; }
+    .about-step-num {
+      display: flex; flex-shrink: 0; align-items: center; justify-content: center;
+      width: 36px; height: 36px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--primary-soft), var(--accent-soft));
+      color: var(--primary); font-size: .85rem; font-weight: 800;
+    }
+    .about-step-line { position: absolute; top: 36px; bottom: 0; left: 17px; width: 2px; background: var(--border); }
+    .about-step:last-child .about-step-line { display: none; }
+    .about-step-content h3 { margin-bottom: 4px; font-size: .95rem; }
+    .about-step-content p { margin: 0; color: var(--muted); font-size: .85rem; line-height: 1.55; }
+    .section-head { max-width: 640px; margin: 0 auto 36px; text-align: center; }
+    .section-head h2 { margin-bottom: 10px; color: #fff; font-size: 2rem; line-height: 1.2; }
+    .section-head p { margin: 0 auto; max-width: 52ch; color: #CBD5E1; line-height: 1.6; }
+    .feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-5); }
+    .feature-tile {
+      position: relative; box-sizing: border-box; height: 100%; overflow: hidden;
+      padding: 28px 24px; border: 1px solid var(--border); border-radius: var(--radius-lg);
+      background: var(--surface); box-shadow: var(--shadow-sm);
+      transition: transform .25s var(--ease), box-shadow .25s var(--ease);
+    }
+    .feature-tile::before {
+      content: ""; position: absolute; inset: 0 0 auto; height: 3px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+    }
+    .feature-tile:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+    .feature-tile h3 { margin: 0 0 10px; font-size: 1.1rem; line-height: 1.3; }
+    .feature-tile p { margin: 0; color: var(--muted); font-size: .93rem; line-height: 1.6; }
+    .about-footer { border-top: 1px solid rgba(148,163,184,.22); color: #CBD5E1; }
+    .about-footer-inner {
+      max-width: 1180px; margin: 0 auto; padding: 22px var(--space-5);
+      display: flex; justify-content: space-between; gap: 16px; font-size: .86rem;
+    }
+    .about-footer a { color: inherit; }
+
+    @media (max-width: 800px) {
+      .about-grid { grid-template-columns: 1fr; }
+      .feature-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 640px) {
+      html { scroll-padding-top: 63px; }
+      body { padding-top: 63px; }
+      .about-nav-inner { height: 62px; flex-wrap: wrap; justify-content: space-between; }
+      .about-brand-logo { width: 38px; height: 38px; }
+      .about-menu-toggle { display: inline-flex; }
+      .about-nav-links {
+        display: none; flex-basis: 100%; flex-direction: column; align-items: stretch;
+        padding: 8px; border: 1px solid var(--border); border-radius: var(--radius);
+        background: var(--surface); box-shadow: var(--shadow-lg); margin-left: 0;
+      }
+      .about-nav-links.open { display: flex; }
+      .about-nav-links a { padding: 12px 14px; }
+      .about-page { padding: 24px var(--space-4) 44px; }
+      .landing-section { padding: 22px 0; scroll-margin-top: 68px; }
+      .about-text, .about-visual { padding: 24px 20px; }
+      .feature-grid { grid-template-columns: 1fr; }
+      .section-head h2 { font-size: 1.65rem; }
+      .about-footer-inner { flex-direction: column; padding: 18px var(--space-4); }
+    }
+  </style>
+</head>
+<body>
+  <header class="about-nav">
+    <div class="about-nav-inner">
+      <a class="brand" href="home.html" aria-label="RoomSync Home">
+        <img class="about-brand-logo" src="../assets/logos/logo.png" alt="">
+        <span class="brand-text">RoomSync</span>
+      </a>
+      <button class="about-menu-toggle" type="button" aria-label="Toggle navigation" aria-expanded="false" aria-controls="about-nav-links">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+      <nav class="about-nav-links" id="about-nav-links" aria-label="About RoomSync navigation">
+        <a href="home.html">Home</a>
+        <a href="login.html">Sign In</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="about-page">
+    <section id="about" class="landing-section" aria-labelledby="about-title">
+      <div class="about-grid">
+        <div class="about-text">
+          <span class="section-label">About RoomSync</span>
+          <h1 id="about-title">A Smarter Way to Manage Room &amp; Lab Reservations</h1>
+          <p>
+            RoomSync is a centralized reservation system built for
+            Camarines Sur Polytechnic Colleges. It replaces manual coordination
+            and spreadsheet-based scheduling with a streamlined digital platform
+            that gives students, faculty, and administrators real-time visibility
+            into room and laboratory availability.
+          </p>
+          <p>
+            The system helps reduce scheduling conflicts and double-bookings.
+            Every reservation request follows a clear approval workflow,
+            supporting transparency and accountability across departments.
+          </p>
+          <div class="about-highlights">
+            <div class="about-stat"><strong>Centralized</strong><span>All rooms in one place</span></div>
+            <div class="about-stat"><strong>Real-Time</strong><span>Live availability updates</span></div>
+            <div class="about-stat"><strong>Transparent</strong><span>Clear approval workflow</span></div>
+            <div class="about-stat"><strong>Secure</strong><span>CSPC email authentication</span></div>
+          </div>
+        </div>
+        <div class="about-visual">
+          <h2>How It Works</h2>
+          <div class="about-flow">
+            <div class="about-step">
+              <div class="about-step-num">1</div><div class="about-step-line"></div>
+              <div class="about-step-content"><h3>Sign In</h3><p>Log in using your official CSPC email account to access the system.</p></div>
+            </div>
+            <div class="about-step">
+              <div class="about-step-num">2</div><div class="about-step-line"></div>
+              <div class="about-step-content"><h3>Browse Availability</h3><p>View rooms and labs, check schedules, and find open time slots.</p></div>
+            </div>
+            <div class="about-step">
+              <div class="about-step-num">3</div><div class="about-step-line"></div>
+              <div class="about-step-content"><h3>Submit a Request</h3><p>Select a room, pick your time, add the purpose, and submit.</p></div>
+            </div>
+            <div class="about-step">
+              <div class="about-step-num">4</div>
+              <div class="about-step-content"><h3>Get Approved</h3><p>Admins review and approve requests. You're notified of the outcome.</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="features" class="landing-section" aria-labelledby="features-title">
+      <div class="section-head">
+        <span class="section-label">Key Features</span>
+        <h2 id="features-title">Everything You Need to Manage Reservations</h2>
+        <p>Built for CSPC faculty, students, and administrators. Fast, focused, and reliable.</p>
+      </div>
+      <div class="feature-grid">
+        <article class="feature-tile"><h3>Room Availability</h3><p>See every room and lab at a glance — check who has it, when it's free, and what's coming up in real time.</p></article>
+        <article class="feature-tile"><h3>Laboratory Reservation</h3><p>Reserve computer labs and specialized facilities with equipment tracking. Know exactly what each space offers.</p></article>
+        <article class="feature-tile"><h3>Reservation Management</h3><p>Submit, track, modify, and manage all your reservation requests from a single, organized dashboard.</p></article>
+        <article class="feature-tile"><h3>Schedule Monitoring</h3><p>Full calendar view with color-coded statuses. Monitor schedules by day, week, or month at a glance.</p></article>
+        <article class="feature-tile"><h3>User Authentication</h3><p>Secure sign-in with role-based access for students, faculty, and administrators using CSPC email accounts.</p></article>
+        <article class="feature-tile"><h3>Centralized Room Information</h3><p>All room details, capacities, equipment, and availability consolidated in one searchable directory.</p></article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="about-footer">
+    <div class="about-footer-inner">
+      <span>© <span id="about-year"></span> CSPC — RoomSync. All rights reserved.</span>
+      <a href="home.html">Return to Home</a>
+    </div>
+  </footer>
+
+  <script>
+    const aboutToggle = document.querySelector('.about-menu-toggle');
+    const aboutMenu = document.getElementById('about-nav-links');
+    aboutToggle.addEventListener('click', () => {
+      const open = aboutMenu.classList.toggle('open');
+      aboutToggle.setAttribute('aria-expanded', String(open));
+    });
+    aboutMenu.querySelectorAll('a').forEach((link) => {
+      link.addEventListener('click', () => {
+        aboutMenu.classList.remove('open');
+        aboutToggle.setAttribute('aria-expanded', 'false');
+      });
+    });
+    document.getElementById('about-year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>

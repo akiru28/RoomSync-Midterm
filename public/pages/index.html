@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="refresh" content="0; url=home.html">
+  <title>RoomSync</title>
+  <link rel="icon" type="image/png" href="../assets/logos/logo.png">
+</head>
+<body>
+  <script>
+    const destination = localStorage.getItem('rr_token') && localStorage.getItem('rr_user')
+      ? 'dashboard.html'
+      : 'home.html';
+    location.replace(destination);
+  </script>
+</body>
+</html>

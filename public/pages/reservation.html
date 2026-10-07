@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#12355B">
+  <title>New Reservation — RoomSync</title>
+  <link rel="icon" type="image/png" href="../assets/logos/logo.png">
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/role-theme.css">
+  <style>
+    html{scroll-behavior:smooth;scroll-padding-top:68px}
+    html,body{overflow-x:hidden}
+    body{position:relative}
+    body::before,body::after{
+      content:"";position:fixed;border-radius:50%;filter:blur(80px);
+      opacity:.24;pointer-events:none;z-index:0;
+      animation:blob-move 16s ease-in-out infinite alternate;
+    }
+    body::before{width:380px;height:380px;background:var(--hero-blob-1);top:-140px;right:-120px}
+    body::after{width:300px;height:300px;background:var(--hero-blob-2);bottom:-120px;left:-90px;animation-direction:alternate-reverse;animation-duration:18s}
+    #app{position:relative;z-index:1}
+    #app > main.container{min-height:calc(100vh - 68px)}
+    .res-form-wrap .form-row-2{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-4)}
+    .res-form-wrap .notice{
+      padding:var(--space-4) var(--space-5);
+      background:linear-gradient(135deg,var(--info-bg),rgba(59,130,246,.08));
+      border:1px solid rgba(59,130,246,.25);
+      border-radius:14px;
+      margin-bottom:var(--space-5);
+    }
+    .res-form-wrap .notice h4{margin:0 0 4px;font-size:1rem;color:var(--primary)}
+    .res-form-wrap .notice p{margin:0;font-size:var(--fs-sm);color:var(--text-2);line-height:1.55}
+    @media (max-width:720px){.res-form-wrap .form-row-2{grid-template-columns:1fr}}
+    @keyframes blob-move{to{transform:translate(-24px,16px) scale(1.05)}}
+
+    @media (prefers-reduced-motion: reduce){
+      *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
+      html{scroll-behavior:auto}
+      .hero-entrance{opacity:1;transform:none}
+      body::before,body::after{animation:none !important}
+    }
+
+    .hero-entrance{opacity:0;transform:translateY(16px)}
+    .hero-entrance.visible{animation:hero-up .7s var(--ease) both}
+    .hero-entrance.d1{animation-delay:.05s}.hero-entrance.d2{animation-delay:.12s}
+    @keyframes hero-up{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+  </style>
+</head>
+<body class="role-page">
+  <div id="app">
+    <!-- header injected -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-user" data-user-only hidden>
+        <div class="sidebar-user-avatar" aria-hidden="true"></div>
+        <div class="sidebar-user-info">
+          <div class="sidebar-user-name" data-user-name>User</div>
+          <span class="badge info small sidebar-role-pill" data-role-label></span>
+        </div>
+      </div>
+      <nav aria-label="Main Navigation">
+        <ul>
+          <li data-user-only><a href="dashboard.html">Overview</a></li>
+          <li data-user-only><a href="rooms.html">Rooms</a></li>
+          <li data-user-only><a href="labs.html">Laboratories</a></li>
+          <li data-user-only><a href="calendar.html">Calendar</a></li>
+          <li data-can-reserve hidden><a href="reservation.html">New Reservation</a></li>
+          <li data-can-reserve hidden><a href="my-reservations.html">My Reservations</a></li>
+          <li data-report-access hidden><a href="reports.html">Lab Reports</a></li>
+          <li data-admin-only hidden><a href="admin.html">Admin</a></li>
+        </ul>
+        <ul>
+          <li data-user-only><a href="profile.html">Profile</a></li>
+          <li data-user-only><a href="#" data-logout>Logout</a></li>
+        </ul>
+      </nav>
+    </aside>
+    <main class="container with-sidebar narrow">
+      <header class="page-header hero-entrance d1">
+        <div class="page-title-block">
+          <span class="eyebrow">Request · New Booking</span>
+          <h1>New Reservation</h1>
+          <p class="lead">Fill out the details below to request a room or lab. Your submission will be reviewed by the Lab Tech or Admin before approval.</p>
+        </div>
+        <div class="page-actions">
+          <a class="btn ghost" href="calendar.html">View calendar</a>
+        </div>
+      </header>
+      <div class="card mt res-form-wrap hero-entrance d2">
+        <span class="section-label">Submission guide</span>
+        <div class="notice">
+          <h4>Before you submit</h4>
+          <p>Requests routed through Lab Tech or Admin approval. Picking a room from the Rooms page pre-fills this form. Pick a realistic end time and attendee count that fits the room capacity.</p>
+        </div>
+
+        <form id="reservation-form" class="form">
+          <div class="field">
+            <label for="res-room">Room / Lab</label>
+            <select name="room_id" id="res-room" required>
+              <option value="">Select a room…</option>
+              <option value="1">Lab A - Room 101 (24 pax)</option>
+              <option value="2">Lab B - Room 102 (30 pax)</option>
+              <option value="3">Room C - 203 (12 pax)</option>
+              <option value="4">Lab D - Room 205 (20 pax)</option>
+              <option value="5">Lecture Hall 301 (80 pax)</option>
+              <option value="6">Seminar Room 302 (18 pax)</option>
+            </select>
+            <div id="res-room-loading" class="reservation-room-loading" aria-hidden="true" hidden>
+              <span class="skeleton skeleton-line" style="width:46%"></span>
+              <span class="skeleton skeleton-line" style="width:68%"></span>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="res-purpose">Purpose / Subject</label>
+            <input name="purpose" id="res-purpose" required placeholder="e.g., Class Lecture, Project Work, Study Group">
+          </div>
+
+          <div class="field">
+            <label for="res-program-section">Program / Section</label>
+            <input name="programSection" id="res-program-section" maxlength="150" required placeholder="e.g., BSIT 3A">
+          </div>
+
+          <div class="form-row-2">
+            <div class="field">
+              <label for="res-start">Start</label>
+              <input type="datetime-local" name="start_time" id="res-start" required>
+            </div>
+            <div class="field">
+              <label for="res-end">End</label>
+              <input type="datetime-local" name="end_time" id="res-end" required>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="res-attendees">Expected attendees</label>
+            <input type="number" name="attendees" id="res-attendees" min="1" value="1">
+          </div>
+
+          <div class="field">
+            <label for="res-notes">Notes (optional)</label>
+            <textarea name="notes" id="res-notes" placeholder="Any special setup, equipment needs, etc."></textarea>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn primary large">Submit Request</button>
+            <a class="btn ghost large" href="dashboard.html">Cancel</a>
+          </div>
+        </form>
+      </div>
+    </main>
+    <!-- footer injected -->
+    <!-- modals injected -->
+  </div>
+  <script src="../js/components.js"></script>
+  <script src="../js/api.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/reservation.js"></script>
+  <script>
+    (function(){
+      const qs = s => document.querySelector(s);
+      const params = new URLSearchParams(location.search);
+      const roomId = params.get('roomId');
+      const roomName = params.get('room');
+      if (roomId) {
+        const sel = qs('#res-room');
+        if (sel) {
+          let found = Array.from(sel.options).find(o => String(o.value) === String(roomId));
+          if (!found && roomName) {
+            const opt = document.createElement('option');
+            opt.value = roomId; opt.textContent = roomName; opt.selected = true;
+            sel.insertBefore(opt, sel.firstChild);
+            found = opt;
+          }
+          if (found) sel.value = found.value;
+        }
+      }
+      const now = new Date();
+      const pad = n => String(n).padStart(2,'0');
+      const fmt = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+      const start = qs('#res-start'); if (start && !start.value) start.value = fmt(new Date(now.getTime() + 30*60*1000));
+      const end = qs('#res-end'); if (end && !end.value) end.value = fmt(new Date(now.getTime() + 2*60*60*1000));
+    })();
+  </script>
+  <script>
+    (function(){
+      var mq=window.matchMedia('(prefers-reduced-motion: reduce)');
+      if(mq.matches){return;}
+      var els=document.querySelectorAll('.hero-entrance');
+      if(!els.length){return;}
+      var run=function(){els.forEach(function(el){el.classList.add('visible');});};
+      if('requestAnimationFrame' in window){requestAnimationFrame(function(){requestAnimationFrame(run);});}else{run();}
+    })();
+  </script>
+</body>
+</html>

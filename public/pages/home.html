@@ -1,0 +1,982 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="RoomSync — Intelligent Room & Laboratory Reservation System for Camarines Sur Polytechnic Colleges.">
+  <meta name="theme-color" content="#12355B">
+  <title>Home</title>
+  <link rel="icon" type="image/png" href="../assets/logos/logo.png">
+  <link rel="stylesheet" href="../css/main.css">
+  <style>
+    /* ================================================================
+       RoomSync Landing Page — Scoped Styles
+       Navy Blue + White Professional Theme
+       ================================================================ */
+
+    /* --- Base overrides for landing --- */
+    html { scroll-behavior: smooth; scroll-padding-top: 68px; }
+    html, body { overflow-x: hidden; }
+    body { padding-top: 68px; }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      background-image: url('../assets/images/bg.jpg');
+      background-size: cover;
+      background-position: center center;
+      background-repeat: repeat;
+      filter: blur(4px) brightness(0.75) contrast(1.0) saturate(2.0);
+      transform: scale(1.05);
+      pointer-events: none;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background: linear-gradient(180deg, rgba(15,23,42,0.55) 0%, rgba(15,23,42,0.72) 100%);
+    }
+.home-wrap { min-height: calc(100vh - 68px); display: flex; flex-direction: column; overflow: clip; }
+    .home-wrap > section,
+    .home-wrap > nav { flex-shrink: 0; }
+    .home-wrap .landing-footer { margin-top: auto; }
+
+    /* ----------------------------------------------------------------
+       1. NAVIGATION — Sticky Glass Effect
+       ---------------------------------------------------------------- */
+    .landing-nav {
+      position: fixed; top: 0; z-index: 100;
+      padding: 0; width: 100%;
+      background: var(--bg);
+      backdrop-filter: saturate(160%) blur(18px);
+      -webkit-backdrop-filter: saturate(160%) blur(18px);
+      transition: box-shadow .3s var(--ease), border-color .3s var(--ease);
+      border-bottom: 1px solid var(--border);
+      box-shadow: var(--shadow-xs);
+    }
+    .landing-nav.scrolled {
+      box-shadow: var(--shadow-sm);
+      border-bottom-color: var(--border-2);
+    }
+    .landing-nav-inner {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 14px var(--space-5);
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+    .landing-nav .brand-text { font-size: 1.1rem; }
+   .landing-nav .brand {
+  display: inline-flex;
+  align-items: center;
+  margin-right: auto;
+}
+    .landing-brand-logo {
+      display: block; width: 42px; height: 42px; object-fit: contain; flex-shrink: 0;
+    }
+    .landing-nav-links { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+    .landing-nav-links a {
+      text-decoration: none; color: var(--text-2);
+      padding: 9px 14px; border-radius: 8px; font-size: var(--fs-sm); font-weight: 500;
+      transition: all .18s var(--ease);
+    }
+    .landing-nav-links a:hover { background: var(--surface-2); color: var(--text); }
+    .landing-nav-links a:focus-visible { outline: none; box-shadow: var(--nav-focus); }
+    .landing-nav-links a.btn { padding: 8px 14px; }
+    .landing-toggle {
+      display: none; background: transparent; border: 1px solid var(--border);
+      padding: 8px; border-radius: 8px; color: var(--text); cursor: pointer;
+      line-height: 1;
+    }
+    .landing-toggle svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; }
+    .landing-toggle:hover { background: var(--surface-2); }
+    .landing-toggle:focus-visible { outline: none; box-shadow: var(--nav-focus); }
+
+    @media (max-width: 768px) {
+      .landing-toggle { display: inline-flex; }
+      html { scroll-padding-top: 63px; }
+      body { padding-top: 63px; }
+      .landing-nav-inner {
+        position: relative; height: auto; min-height: 62px;
+        flex-wrap: wrap; justify-content: space-between; padding: 10px var(--space-5);
+      }
+      .landing-nav-links {
+        display: none; width: 100%; flex-direction: column; align-items: stretch; gap: var(--space-2);
+        background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+        padding: var(--space-4); margin-top: var(--space-3); box-shadow: var(--shadow-lg);
+      }
+      .landing-nav-links.open { display: flex; }
+      .landing-nav-links a { padding: 12px 16px; text-align: left; }
+      
+    }
+
+    /* ----------------------------------------------------------------
+       3. DECORATIVE BLOBS
+       ---------------------------------------------------------------- */
+    .blob {
+      position: absolute; border-radius: 50%; filter: blur(70px);
+      opacity: .28; pointer-events: none; z-index: 0;
+    }
+    .blob.b1 {
+      width: 380px; height: 380px; background: var(--hero-blob-1);
+      top: -120px; right: -100px;
+      animation: blob-move 14s ease-in-out infinite alternate;
+    }
+    .blob.b2 {
+      width: 320px; height: 320px; background: var(--hero-blob-2);
+      bottom: -100px; left: -100px;
+      animation: blob-move 16s ease-in-out infinite alternate-reverse;
+    }
+    @keyframes blob-move { to { transform: translate(-30px, 20px) scale(1.05); } }
+
+    /* ----------------------------------------------------------------
+       4. HERO SECTION
+       ---------------------------------------------------------------- */
+    .landing-hero {
+      position: relative; z-index: 2;
+      max-width: 1180px; margin: 0 auto; padding: 64px var(--space-5) 56px;
+      display: grid; grid-template-columns: 1.1fr .9fr; gap: 48px; align-items: center;
+      min-height: calc(100vh - 68px);
+    }
+    .hero-text { z-index: 2; max-width: 58ch; }
+
+    .eyebrow {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(59, 130, 246, 0.14);
+      border: 1px solid rgba(59, 130, 246, 0.35);
+      color: #93C5FD; font-size: .78rem; font-weight: 700;
+      letter-spacing: .06em; text-transform: uppercase;
+      padding: 7px 14px; border-radius: 999px; margin-bottom: 20px;
+    }
+    .eyebrow::before {
+      content: ""; width: 7px; height: 7px; border-radius: 50%;
+      background: #60A5FA; box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.22);
+    }
+.landing-title {
+      font-size: clamp(2.1rem, 4.8vw, 3.3rem); line-height: 1.08;
+      letter-spacing: -.02em; margin: 0 0 20px;
+      color: #FFFFFF;
+      text-shadow: 0 2px 12px rgba(0,0,0,0.25);
+      max-width: 14ch;
+    }
+    .landing-title .accent {
+      background: linear-gradient(120deg, #60A5FA, #93C5FD);
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+    }
+
+.landing-lead {
+      font-size: 1.02rem; color: #CBD5E1; max-width: 52ch;
+      margin: 0 0 32px; line-height: 1.68;
+    }
+.landing-cta { display: flex; gap: var(--space-3); flex-wrap: wrap; margin-bottom: 32px; }
+    .landing-cta .btn.large { padding: 14px 26px; font-size: 1rem; }
+
+    .trusted {
+      display: flex; align-items: center; gap: var(--space-4); flex-wrap: wrap;
+      padding-top: 22px; border-top: 1px dashed rgba(255,255,255,0.15);
+    }
+.trusted small {
+      color: #94A3B8; font-size: .75rem; letter-spacing: .08em;
+      text-transform: uppercase; font-weight: 700;
+    }
+    .trusted .avatars { display: flex; }
+    .avatars span {
+      width: 30px; height: 30px; border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.9); margin-left: -8px;
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-weight: 700; font-size: .75rem;
+    }
+.avatars span:first-child { margin-left: 0; background: var(--avatar-1); }
+    .avatars span:nth-child(2) { background: var(--avatar-2); }
+    .avatars span:nth-child(3) { background: var(--avatar-3); }
+    .avatars span:nth-child(4) { background: var(--avatar-4); }
+    .user-count { font-weight: 700; color: #E2E8F0; font-size: .9rem; }
+/* Hero entrance animation (staggered) */
+    .hero-entrance { opacity: 0; transform: translateY(16px); }
+    .hero-entrance.visible {
+      animation: hero-up .7s var(--ease) both;
+    }
+    .hero-entrance.d1 { animation-delay: .05s; }
+    .hero-entrance.d2 { animation-delay: .12s; }
+    .hero-entrance.d3 { animation-delay: .2s; }
+    .hero-entrance.d4 { animation-delay: .28s; }
+    .hero-entrance.d5 { animation-delay: .36s; }
+    @keyframes hero-up {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Hero collage illustration */
+    .hero-collage {
+      position: relative; height: 480px; max-width: 540px; margin-left: auto;
+      display: grid; grid-template-columns: repeat(6,1fr); grid-template-rows: repeat(6,1fr); gap: 12px;
+    }
+    .tile {
+      background: var(--white); border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      padding: 14px 16px; border: 1px solid var(--border);
+      transition: transform .35s var(--ease), box-shadow .35s var(--ease);
+      animation: tile-float 8s ease-in-out infinite;
+    }
+    .tile:hover { transform: translateY(-3px) !important; box-shadow: var(--shadow-xl); }
+    .tile.t1 { grid-column: 1/5; grid-row: 1/3; animation-delay: 0s; background: var(--tile-accent-bg); }
+    .tile.t2 { grid-column: 4/7; grid-row: 2/5; animation-delay: -1.5s; z-index: 2; }
+    .tile.t3 { grid-column: 1/4; grid-row: 3/7; animation-delay: -3s; }
+    .tile.t4 { grid-column: 4/7; grid-row: 5/7; animation-delay: -4.5s; background: linear-gradient(180deg,#fff,var(--tile-accent-bg-2)); }
+
+@keyframes tile-float {
+      0%,100% { transform: translateY(0); }
+      50%     { transform: translateY(-3px); }
+    }
+    .tile h4 { margin: 0 0 6px; font-size: 1rem; font-weight: 800; }
+    .tile .row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 8px 0; border-bottom: 1px dashed var(--landing-divider); font-size: .85rem;
+    }
+    .tile .row:last-child { border-bottom: none; }
+    .mini-stat {
+      padding: 10px 12px; border-radius: 10px;
+      background: var(--mini-stat-bg); margin-top: 8px;
+    }
+    .mini-stat strong { font-size: 1.5rem; color: var(--primary); display: block; line-height: 1; }
+    .mini-stat span { font-size: .75rem; color: var(--muted); }
+    .bar { height: 8px; border-radius: 999px; background: var(--bar-bg); overflow: hidden; margin-top: 6px; }
+    .bar > span { display: block; height: 100%; border-radius: 999px; background: var(--bar-fill); }
+
+    /* ----------------------------------------------------------------
+       5. SHARED SECTION STYLES
+       ---------------------------------------------------------------- */
+    .landing-section {
+      position: relative; z-index: 2;
+      max-width: 1180px; margin: 0 auto; padding: 72px var(--space-5);
+    }
+    .section-head { text-align: center; max-width: 640px; margin: 0 auto 48px; }
+    .section-head h2 { font-size: 2rem; margin-bottom: 10px; color: #FFFFFF; line-height: 1.2; }
+.section-head p { color: #CBD5E1; margin: 0; line-height: 1.6; max-width: 52ch; margin-left: auto; margin-right: auto; }
+.section-label {
+      display: inline-block; font-size: .72rem; font-weight: 700;
+      letter-spacing: .1em; text-transform: uppercase;
+      color: #93C5FD; margin-bottom: 12px;
+    }
+/* ----------------------------------------------------------------
+       6. ABOUT SECTION
+       ---------------------------------------------------------------- */
+    .about-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: stretch;
+    }
+    .about-text {
+      background: rgba(15, 23, 42, 0.45);
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      backdrop-filter: blur(14px) saturate(140%);
+      -webkit-backdrop-filter: blur(14px) saturate(140%);
+      border-radius: var(--radius-xl);
+      padding: 40px 36px;
+      display: flex; flex-direction: column;
+    }
+.about-text h2 {
+      font-size: 1.85rem; margin-bottom: 16px; line-height: 1.18;
+      color: #FFFFFF; max-width: 24ch;
+    }
+.about-text p {
+      color: #CBD5E1; line-height: 1.72; margin-bottom: 16px; font-size: .98rem;
+    }
+.about-text p:last-of-type { margin-bottom: 0; }
+    .about-highlights {
+      display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); margin-top: 28px;
+    }
+    .about-stat {
+      background: rgba(255, 255, 255, 0.94); border: 1px solid rgba(148, 163, 184, 0.28);
+      border-radius: var(--radius); padding: 18px 14px;
+      text-align: center;
+      transition: transform .25s var(--ease), box-shadow .25s var(--ease);
+    }
+.about-stat:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+    .about-stat strong {
+      display: block; font-size: 1.45rem; font-weight: 800; line-height: 1.1;
+      background: linear-gradient(120deg, var(--navy-700), var(--blue-600));
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+      margin-bottom: 4px;
+    }
+.about-stat span {
+      font-size: .78rem; color: #475569; margin-top: 2px; display: block; line-height: 1.35;
+    }
+.about-visual {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-xl); padding: 40px 36px;
+      box-shadow: var(--shadow-sm);
+      display: flex; flex-direction: column;
+    }
+    .about-visual h3 { font-size: 1.15rem; margin-bottom: 20px; }
+    .about-flow {
+      display: flex; flex-direction: column; gap: 0;
+    }
+    .about-step {
+      display: flex; align-items: flex-start; gap: 16px; position: relative;
+      padding-bottom: 20px;
+    }
+    .about-step:last-child { padding-bottom: 0; }
+    .about-step-num {
+      width: 36px; height: 36px; border-radius: 10px; flex-shrink: 0;
+      background: linear-gradient(135deg, var(--primary-soft), var(--accent-soft));
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: .85rem; color: var(--primary);
+    }
+.about-step-line {
+      position: absolute; left: 17px; top: 36px; bottom: 0;
+      width: 2px; background: var(--border);
+    }
+    .about-step:last-child .about-step-line { display: none; }
+    .about-step-content h4 { font-size: .95rem; margin-bottom: 4px; font-weight: 700; }
+    .about-step-content p { margin: 0; font-size: .85rem; color: var(--muted); line-height: 1.55; }
+
+    /* ----------------------------------------------------------------
+       7. FEATURES GRID
+       ---------------------------------------------------------------- */
+    .feature-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-5);
+      align-items: stretch;
+    }
+    .feature-tile {
+      background: var(--white); border-radius: var(--radius-lg); padding: 28px 24px;
+      box-shadow: var(--shadow-sm); border: 1px solid var(--border);
+      transition: transform .25s var(--ease), box-shadow .25s var(--ease), border-color .25s var(--ease);
+      position: relative; overflow: hidden;
+      height: 100%; box-sizing: border-box;
+    }
+.feature-tile::before {
+      content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      transform: scaleX(0); transform-origin: left; transition: transform .4s var(--ease);
+    }
+    .feature-tile:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); border-color: var(--accent); }
+    .feature-tile:hover::before { transform: scaleX(1); }
+    .feature-tile:focus-visible { outline: none; box-shadow: var(--shadow-lg), 0 0 0 3px var(--accent-soft); }
+    .feature-icon {
+      width: 52px; height: 52px; border-radius: 14px; margin-bottom: 16px;
+      background: linear-gradient(135deg, var(--primary-soft), var(--accent-soft));
+      display: flex; align-items: center; justify-content: center; font-size: 1.5rem;
+    }
+    .feature-tile h3 { font-size: 1.1rem; margin: 0 0 10px; line-height: 1.3; }
+    .feature-tile p { margin: 0; color: var(--muted); font-size: .93rem; line-height: 1.6; }
+    .feature-tile:nth-child(5) .feature-icon,
+    .feature-tile:nth-child(6) .feature-icon {
+      background: linear-gradient(135deg, var(--primary-soft), var(--navy-50));
+    }
+
+    /* ----------------------------------------------------------------
+       8. CTA / SIGN-IN BAND
+       ---------------------------------------------------------------- */
+    .cta-band {
+      position: relative; z-index: 2;
+      max-width: 1180px; margin: 0 auto; padding: 40px var(--space-5) 72px;
+    }
+    .cta-inner {
+      background: var(--cta-bg);
+      border-radius: 24px; padding: 56px 52px;
+      display: grid; grid-template-columns: 1.15fr .85fr; gap: 44px; align-items: center;
+      box-shadow: 0 24px 60px var(--cta-shadow);
+      position: relative; overflow: hidden;
+    }
+    .cta-inner::after {
+      content: ""; position: absolute; right: -80px; top: -80px;
+      width: 260px; height: 260px; border-radius: 50%;
+      background: var(--cta-glow); filter: blur(10px);
+    }
+    .cta-inner > div:first-child { position: relative; z-index: 2; }
+    .cta-inner h2 { color: #fff; font-size: 1.9rem; margin-bottom: 12px; line-height: 1.2; max-width: 20ch; }
+    .cta-inner p { color: rgba(255,255,255,.9); margin: 0 0 14px; max-width: 52ch; line-height: 1.65; }
+    .cta-email-hint {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.22);
+      border-radius: 999px; padding: 7px 16px; margin-bottom: 26px;
+      font-size: .82rem; color: rgba(255,255,255,.95); font-weight: 600;
+    }
+    .cta-email-hint .email-icon { font-size: 1rem; }
+    .cta-inner .landing-cta { margin-bottom: 0; }
+    .cta-inner .btn.cta-signin {
+      background: #fff; color: var(--navy-700); border-color: #fff;
+      font-weight: 700; padding: 14px 28px; font-size: 1rem;
+      box-shadow: 0 4px 16px rgba(0,0,0,.15);
+    }
+    .cta-inner .btn.cta-signin:hover {
+      background: var(--slate-100); box-shadow: 0 8px 24px rgba(0,0,0,.2);
+    }
+    .cta-inner .btn.ghost {
+      background: rgba(255,255,255,.12); border-color: rgba(255,255,255,.40); color: #fff;
+    }
+    .cta-inner .btn.ghost:hover { background: rgba(255,255,255,.22); color: #fff; border-color: #fff; }
+
+    .cta-right { position: relative; z-index: 2; text-align: center; color: #fff; display: flex; flex-direction: column; align-items: center; }
+    .cta-right .cta-auth-visual {
+      width: 88px; height: 88px; border-radius: 22px;
+      background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.22);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2.4rem; margin: 0 auto 16px;
+    }
+    .cta-right strong { display: block; font-size: 1.15rem; line-height: 1.3; }
+    .cta-right span {
+      font-size: .85rem; opacity: .85; margin-top: 6px; display: block; max-width: 28ch;
+    }
+
+    /* ----------------------------------------------------------------
+       9. FOOTER
+       ---------------------------------------------------------------- */
+    .landing-footer {
+      position: relative; z-index: 2;
+      border-top: 1px solid rgba(148, 163, 184, 0.22);
+      background: rgba(11, 18, 32, 0.94);
+      backdrop-filter: blur(20px) saturate(160%);
+      -webkit-backdrop-filter: blur(20px) saturate(160%);
+    }
+.landing-footer-inner {
+      max-width: 1180px; margin: 0 auto; padding: 56px var(--space-5) 0;
+    }
+    .footer-grid {
+      display: grid; grid-template-columns: 1.3fr 1fr 1fr; gap: 48px;
+      padding-bottom: 40px;
+    }
+    .footer-col h4 {
+      font-size: .85rem; font-weight: 700; margin-bottom: 16px;
+      color: #F8FAFC; letter-spacing: .02em;
+    }
+.footer-col p {
+      font-size: .88rem; color: #94A3B8; line-height: 1.65; margin: 0 0 12px; max-width: 40ch;
+    }
+.footer-col ul {
+      list-style: none; padding: 0; margin: 0;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .footer-col ul li a {
+      text-decoration: none; color: #94A3B8; font-size: .88rem;
+      transition: color .18s var(--ease);
+    }
+.footer-col ul li a:hover { color: #FFFFFF; }
+.footer-brand {
+      display: flex; align-items: center; gap: 10px; margin-bottom: 16px;
+    }
+    .footer-brand .landing-brand-logo { width: 34px; height: 34px; flex-shrink: 0; }
+    .footer-brand .brand-text { font-size: 1rem; color: #F8FAFC; }
+.footer-bottom {
+      border-top: 1px solid rgba(148, 163, 184, 0.18);
+      padding: 20px var(--space-5);
+      max-width: 1180px; margin: 0 auto;
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: var(--space-3);
+      font-size: .82rem; color: #94A3B8;
+    }
+/* ----------------------------------------------------------------
+       10. SCROLL-REVEAL
+       ---------------------------------------------------------------- */
+    .reveal {
+      opacity: 0; transform: translateY(24px);
+      transition: opacity .6s var(--ease), transform .6s var(--ease);
+    }
+    .reveal.visible {
+      opacity: 1; transform: translateY(0);
+    }
+    /* Stagger feature cards */
+    .feature-tile.reveal { transition-delay: 0s; }
+    .feature-tile.reveal:nth-child(2) { transition-delay: .06s; }
+    .feature-tile.reveal:nth-child(3) { transition-delay: .12s; }
+    .feature-tile.reveal:nth-child(4) { transition-delay: .18s; }
+    .feature-tile.reveal:nth-child(5) { transition-delay: .24s; }
+    .feature-tile.reveal:nth-child(6) { transition-delay: .3s; }
+
+    /* ----------------------------------------------------------------
+       11. REDUCED MOTION
+       ---------------------------------------------------------------- */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+      html { scroll-behavior: auto; }
+      .reveal { opacity: 1; transform: none; transition: none; }
+      .hero-entrance { opacity: 1; transform: none; }
+      .tile { animation: none !important; }
+      .blob { animation: none !important; }
+    }
+
+    /* ----------------------------------------------------------------
+       12. RESPONSIVE
+       ---------------------------------------------------------------- */
+
+    /* --- Narrow Desktop / Large Laptop (1280px and below) --- */
+    @media (max-width: 1280px) {
+      .landing-hero,
+      .landing-section,
+      .cta-band,
+      .landing-footer-inner,
+      .footer-bottom { max-width: 1100px; }
+    }
+
+    /* --- Laptop / Small Desktop (1100px and below) --- */
+    @media (max-width: 1100px) {
+      .landing-hero { grid-template-columns: 1.05fr .95fr; gap: 40px; padding: 56px var(--space-5) 48px; }
+      .hero-collage { height: 440px; }
+      .feature-grid { gap: var(--space-4); }
+      .footer-grid { gap: 36px; }
+    }
+
+    /* --- Tablet / Large Tablet (960px and below) --- */
+    @media (max-width: 960px) {
+      .landing-hero {
+        grid-template-columns: 1fr; gap: 36px;
+        padding: 36px var(--space-5) 32px; min-height: auto;
+      }
+      .hero-text { max-width: 640px; margin: 0 auto; text-align: left; }
+      .landing-title { max-width: none; }
+      .hero-collage { height: 440px; max-width: 520px; margin: 0 auto; width: 100%; }
+      .about-grid { grid-template-columns: 1fr; gap: 32px; }
+      .about-text { padding: 32px 28px; }
+      .about-visual { padding: 32px 28px; }
+      .feature-grid { grid-template-columns: repeat(2, 1fr); gap: var(--space-4); }
+      .cta-inner { grid-template-columns: 1fr; padding: 40px 36px; gap: 32px; text-align: left; }
+      .cta-inner h2 { max-width: none; }
+      .cta-right { text-align: center; }
+      .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; padding-bottom: 32px; }
+      .landing-footer-inner { padding-top: 48px; }
+    }
+
+    /* --- Standard Tablet (768px and below) --- */
+    @media (max-width: 768px) {
+      .landing-section { padding: 56px var(--space-5); }
+      .section-head { margin-bottom: 40px; }
+      .feature-grid { gap: var(--space-3); }
+      .feature-tile { padding: 24px 20px; }
+      .cta-band { padding: 32px var(--space-5) 56px; }
+      .about-text { padding: 28px 24px; }
+      .about-visual { padding: 28px 24px; }
+    }
+
+    /* --- Mobile / Large Phone (640px and below) --- */
+    @media (max-width: 640px) {
+      .landing-hero { padding: 24px var(--space-5) 24px; gap: 28px; }
+      .hero-collage { height: 380px; gap: 10px; max-width: 460px; }
+      .tile { padding: 12px 14px; border-radius: 12px; }
+
+      .landing-title { font-size: clamp(1.8rem, 7.5vw, 2.4rem); }
+      .landing-lead { font-size: .98rem; line-height: 1.65; margin-bottom: 28px; }
+      .landing-cta { margin-bottom: 28px; gap: 10px; }
+      .landing-cta .btn.large { padding: 12px 22px; font-size: .95rem; }
+
+      .landing-section { padding: 44px var(--space-5); }
+      .section-head { margin-bottom: 32px; max-width: 100%; }
+      .section-head h2 { font-size: 1.65rem; }
+
+      .about-highlights { grid-template-columns: 1fr; }
+      .about-text { padding: 24px 20px; }
+      .about-text h2 { font-size: 1.55rem; max-width: none; }
+      .about-visual { padding: 24px 20px; }
+      .about-visual h3 { margin-bottom: 16px; font-size: 1.05rem; }
+
+      .feature-grid { grid-template-columns: 1fr; gap: var(--space-4); }
+      .feature-tile { padding: 24px 22px; }
+
+      .cta-band { padding: 24px var(--space-5) 48px; }
+      .cta-inner { padding: 32px 24px; gap: 28px; }
+      .cta-inner h2 { font-size: 1.5rem; max-width: none; }
+      .cta-email-hint { padding: 6px 14px; margin-bottom: 22px; font-size: .8rem; }
+
+      .footer-grid { grid-template-columns: 1fr; gap: 28px; padding-bottom: 28px; }
+      .landing-footer-inner { padding-top: 44px; }
+      .footer-bottom { flex-direction: column; align-items: flex-start; padding: 18px var(--space-5); }
+    }
+
+    /* --- Phone / Narrow Mobile (480px and below) --- */
+    @media (max-width: 480px) {
+      .landing-nav-inner { padding: 10px var(--space-4); gap: var(--space-3); }
+      .landing-nav .brand-text { font-size: 1rem; }
+      .landing-brand-logo { width: 38px; height: 38px; }
+
+      .landing-hero { padding: 20px var(--space-4) 20px; }
+      .landing-title { font-size: clamp(1.65rem, 8vw, 2rem); margin-bottom: 16px; }
+      .eyebrow { font-size: .72rem; padding: 6px 12px; margin-bottom: 16px; }
+      .landing-lead { font-size: .94rem; line-height: 1.62; margin-bottom: 24px; }
+      .landing-cta { gap: var(--space-2); margin-bottom: 24px; }
+      .landing-cta .btn { width: 100%; }
+      .landing-cta .btn.large { padding: 12px 18px; font-size: .93rem; }
+      .trusted { gap: var(--space-3); padding-top: 18px; }
+
+      .hero-collage { height: 340px; gap: 8px; max-width: 100%; }
+      .tile { padding: 10px 12px; border-radius: 10px; }
+      .tile h4 { font-size: .9rem; margin-bottom: 4px; }
+      .tile .row { font-size: .78rem; padding: 6px 0; }
+      .mini-stat { padding: 8px 10px; margin-top: 6px; }
+      .mini-stat strong { font-size: 1.2rem; }
+      .mini-stat span { font-size: .7rem; }
+
+      .landing-section { padding: 40px var(--space-4); }
+      .section-head h2 { font-size: 1.5rem; }
+      .section-label { font-size: .7rem; margin-bottom: 10px; }
+
+      .about-text { padding: 22px 18px; }
+      .about-text h2 { font-size: 1.4rem; margin-bottom: 14px; }
+      .about-text p { font-size: .94rem; line-height: 1.68; margin-bottom: 14px; }
+      .about-highlights { gap: var(--space-2); margin-top: 24px; }
+      .about-stat { padding: 16px 12px; }
+      .about-stat strong { font-size: 1.3rem; }
+
+      .about-visual { padding: 22px 18px; }
+      .about-step { gap: 12px; padding-bottom: 18px; }
+      .about-step-num { width: 32px; height: 32px; font-size: .8rem; border-radius: 8px; }
+      .about-step-line { left: 15px; top: 32px; }
+      .about-step-content h4 { font-size: .9rem; }
+      .about-step-content p { font-size: .82rem; }
+
+      .feature-tile { padding: 22px 18px; }
+      .feature-tile h3 { font-size: 1.02rem; margin-bottom: 6px; }
+      .feature-tile p { font-size: .9rem; line-height: 1.58; }
+
+      .cta-band { padding: 20px var(--space-4) 44px; }
+      .cta-inner { padding: 28px 22px; gap: 24px; border-radius: 20px; }
+      .cta-inner h2 { font-size: 1.4rem; margin-bottom: 10px; }
+      .cta-inner p { font-size: .94rem; margin-bottom: 12px; }
+      .cta-email-hint { font-size: .78rem; padding: 6px 12px; margin-bottom: 20px; gap: 6px; }
+      .cta-right .cta-auth-visual { width: 76px; height: 76px; border-radius: 18px; font-size: 2.1rem; margin-bottom: 14px; }
+      .cta-right strong { font-size: 1.05rem; }
+      .cta-right span { font-size: .82rem; }
+
+      .landing-footer-inner { padding-top: 40px; }
+      .footer-grid { gap: 24px; }
+      .footer-col h4 { margin-bottom: 14px; }
+      .footer-col p { font-size: .86rem; }
+      .footer-col ul { gap: 8px; }
+      .footer-bottom { padding: 16px var(--space-4); gap: var(--space-2); font-size: .78rem; }
+    }
+
+    /* --- Small Phone (375px and below) --- */
+    @media (max-width: 375px) {
+      .landing-nav .brand-text { display: none; }
+      .landing-brand-logo { width: 40px; height: 40px; }
+
+      .landing-title { font-size: clamp(1.5rem, 8.5vw, 1.8rem); }
+      .eyebrow { font-size: .68rem; padding: 5px 10px; }
+
+      .hero-collage { height: 320px; }
+      .tile { padding: 9px 10px; }
+      .avatars span { width: 28px; height: 28px; font-size: .7rem; }
+
+      .landing-section { padding: 36px 14px; }
+      .section-head h2 { font-size: 1.4rem; }
+
+      .about-text { padding: 20px 16px; }
+      .about-text h2 { font-size: 1.3rem; }
+      .about-text p { font-size: .9rem; }
+      .about-visual { padding: 20px 16px; }
+      .about-stat { padding: 14px 10px; }
+
+      .feature-tile { padding: 20px 16px; }
+
+      .cta-band { padding: 16px 14px 40px; }
+      .cta-inner { padding: 24px 18px; gap: 22px; }
+      .cta-inner h2 { font-size: 1.3rem; }
+      .cta-right .cta-auth-visual { width: 70px; height: 70px; font-size: 1.9rem; }
+
+      .landing-footer-inner { padding: 36px 14px 0; }
+      .footer-bottom { padding: 14px 14px; }
+    }
+
+    /* --- Extra Small Phone (320px and below) --- */
+    @media (max-width: 320px) {
+      .landing-cta .btn.large { padding: 11px 16px; font-size: .88rem; }
+      .trusted { flex-direction: column; align-items: flex-start; }
+      .trusted small { margin-bottom: 2px; }
+      .user-count { font-size: .82rem; }
+
+      .hero-collage { height: 300px; gap: 6px; }
+      .tile { padding: 8px 9px; border-radius: 9px; }
+      .tile h4 { font-size: .82rem; }
+      .tile .row { font-size: .72rem; padding: 5px 0; }
+      .mini-stat { padding: 7px 8px; }
+      .mini-stat strong { font-size: 1.1rem; }
+      .mini-stat span { font-size: .68rem; }
+
+      .landing-section { padding: 32px 12px; }
+      .section-head { margin-bottom: 28px; }
+      .section-head h2 { font-size: 1.3rem; }
+
+      .about-text { padding: 18px 14px; }
+      .about-text h2 { font-size: 1.22rem; margin-bottom: 12px; }
+      .about-text p { font-size: .88rem; line-height: 1.65; margin-bottom: 12px; }
+      .about-stat { padding: 12px 8px; border-radius: 8px; }
+      .about-stat strong { font-size: 1.15rem; }
+      .about-stat span { font-size: .72rem; }
+
+      .about-visual { padding: 18px 14px; }
+      .about-visual h3 { font-size: 1rem; margin-bottom: 14px; }
+      .about-step { gap: 10px; padding-bottom: 16px; }
+      .about-step-num { width: 30px; height: 30px; font-size: .75rem; }
+      .about-step-line { left: 14px; top: 30px; }
+      .about-step-content h4 { font-size: .86rem; }
+      .about-step-content p { font-size: .78rem; }
+
+      .feature-tile { padding: 18px 14px; border-radius: 12px; }
+      .feature-tile h3 { font-size: .95rem; margin-bottom: 5px; }
+      .feature-tile p { font-size: .86rem; }
+
+      .cta-band { padding: 14px 12px 36px; }
+      .cta-inner { padding: 22px 16px; gap: 20px; border-radius: 18px; }
+      .cta-inner h2 { font-size: 1.22rem; margin-bottom: 8px; }
+      .cta-inner p { font-size: .88rem; margin-bottom: 10px; }
+      .cta-email-hint { font-size: .74rem; padding: 5px 10px; margin-bottom: 18px; }
+      .cta-right .cta-auth-visual { width: 64px; height: 64px; border-radius: 16px; font-size: 1.7rem; margin-bottom: 12px; }
+      .cta-right strong { font-size: .98rem; }
+      .cta-right span { font-size: .78rem; }
+
+      .landing-footer-inner { padding: 32px 12px 0; }
+      .footer-brand .brand-text { font-size: .95rem; }
+      .footer-brand .landing-brand-logo { width: 30px; height: 30px; }
+      .footer-col h4 { font-size: .8rem; margin-bottom: 12px; }
+      .footer-col p { font-size: .82rem; }
+      .footer-col ul li a { font-size: .82rem; }
+      .footer-bottom { padding: 12px 12px; font-size: .74rem; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Splash intro overlay -->
+  <div id="app" class="home-wrap" style="position:relative">
+    <span class="blob b1"></span>
+    <span class="blob b2"></span>
+
+    <!-- ============================================================
+         NAVIGATION — Sticky, responsive, glass effect on scroll
+         ============================================================ -->
+    <nav class="landing-nav" id="landing-nav" aria-label="Main Navigation">
+      <div class="landing-nav-inner">
+        <a class="brand" href="home.html" style="text-decoration:none" aria-label="RoomSync Home">
+          <img class="landing-brand-logo" src="../assets/logos/logo.png" alt="">
+          <div class="brand-text">RoomSync</div>
+        </a>
+        <button type="button" class="landing-toggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="landing-nav-menu">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+        <div class="landing-nav-links" id="landing-nav-menu" role="navigation">
+          <a href="about.html#about">About RoomSync</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- ============================================================
+         HERO SECTION
+         ============================================================ -->
+    <section class="landing-hero">
+      <div class="hero-text">
+        <span class="eyebrow hero-entrance d1">Camarines Sur Polytechnic Colleges</span>
+        <h1 class="landing-title hero-entrance d2">
+          Room &amp; Laboratory<br> <span class="accent">Reservation.</span>
+        </h1>
+        <p class="landing-lead hero-entrance d3">
+          RoomSync provides a centralized platform for managing and reserving
+          lecture rooms and laboratories at CSPC. Check real-time availability,
+          submit requests in seconds, and track approvals all in one place.
+        </p>
+        <div class="landing-cta hero-entrance d4">
+          <a class="btn primary large" href="login.html">Sign In</a>
+          <a class="btn ghost large" href="about.html">Learn More</a>
+        </div>
+        <div class="trusted hero-entrance d5">
+          <small>Built for</small>
+          <div class="avatars" aria-hidden="true">
+            <span title="Student">S</span>
+            <span title="Faculty">F</span>
+            <span title="Lab Tech">L</span>
+            <span title="Admin">A</span>
+          </div>
+          <div class="user-count">Students, Faculty &amp; Administrators</div>
+        </div>
+      </div>
+
+      <div class="hero-collage hero-entrance d3" aria-hidden="true">
+        <div class="tile t1">
+          <h4>Today's Overview</h4>
+          <div class="row"><span>ITLAB 1</span><span class="badge approved">In Use</span></div>
+          <div class="row"><span>ITLAB 2</span><span class="badge pending">Pending</span></div>
+          <div class="row"><span>NAS LAB</span><span class="badge approved">Booked</span></div>
+        </div>
+        <div class="tile t2">
+          <h4>Next Up</h4>
+          <div class="mini-stat">
+            <strong>9:00</strong>
+            <span>ITLAB 1 - Elective 1</span>
+          </div>
+          <div class="mini-stat">
+            <strong>12:00</strong>
+            <span>AB4-TR004 - MORC</span>
+          </div>
+        </div>
+        <div class="tile t3">
+          <h4>Utilization</h4>
+          <div style="padding:4px 0 8px">
+            <div style="font-size:.8rem;color:var(--muted);margin-bottom:4px">Computer Labs</div>
+            <div class="bar"><span style="width:82%"></span></div>
+          </div>
+          <div style="padding:4px 0 8px">
+            <div style="font-size:.8rem;color:var(--muted);margin-bottom:4px">Lecture Rooms</div>
+            <div class="bar"><span style="width:56%"></span></div>
+          </div>
+          <div class="mini-stat">
+            <strong>87%</strong>
+            <span>Average weekly occupancy</span>
+          </div>
+        </div>
+        <div class="tile t4">
+          <h4>Approvals</h4>
+          <div class="row"><span>Pending</span><strong style="color:var(--warning)">2</strong></div>
+          <div class="row"><span>This week</span><strong style="color:var(--success)">14</strong></div>
+          <div class="row"><span>Rejected</span><strong style="color:var(--danger)">1</strong></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         FOOTER
+         ============================================================ -->
+    <footer class="landing-footer">
+      <div class="landing-footer-inner">
+        <div class="footer-grid">
+          <div class="footer-col">
+            <div class="footer-brand">
+              <img class="landing-brand-logo" src="../assets/logos/logo.png" alt="">
+              <div class="brand-text" style="font-weight:800">RoomSync</div>
+            </div>
+            <p>
+              A centralized room and laboratory reservation system
+              for Camarines Sur Polytechnic Colleges. Simplifying
+              scheduling for students, faculty, and administrators.
+            </p>
+          </div>
+          <div class="footer-col">
+            <h4>Quick Links</h4>
+            <ul>
+              <li><a href="about.html#about">About RoomSync</a></li>
+              <li><a href="about.html#features">Key Features</a></li>
+              <li><a href="login.html">Login Page</a></li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <h4>Institution</h4>
+            <p>
+              Camarines Sur Polytechnic Colleges<br>
+              College of Computer Studies
+            </p>
+            <p style="font-size:.82rem">
+              RoomSync is developed for academic use within CSPC.
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div>© <span id="year"></span> CSPC — RoomSync. All rights reserved.</div>
+        <div>Room &amp; Laboratory Reservation System</div>
+      </div>
+    </footer>
+
+    <!-- modals injected -->
+  </div>
+
+  <script src="../js/components.js"></script>
+  <script src="../js/main.js"></script>
+  <script>
+    /* ==================================================================
+       Landing Page — Splash timing, navigation, scroll-reveal, entrance
+       ================================================================== */
+    (function () {
+      'use strict';
+
+      /* --- Year in footer --- */
+      const yearEl = document.getElementById('year');
+      if (yearEl) yearEl.textContent = new Date().getFullYear();
+
+      /* --- Mobile nav toggle --- */
+      const landingToggle = document.querySelector('.landing-toggle');
+      const landingMenu = document.getElementById('landing-nav-menu');
+      if (landingToggle && landingMenu) {
+        landingToggle.addEventListener('click', () => {
+          const open = landingMenu.classList.toggle('open');
+          landingToggle.setAttribute('aria-expanded', String(open));
+        });
+        landingMenu.querySelectorAll('a').forEach(a => {
+          a.addEventListener('click', () => {
+            landingMenu.classList.remove('open');
+            landingToggle.setAttribute('aria-expanded', 'false');
+          });
+        });
+        /* Close on Escape */
+        document.addEventListener('keydown', e => {
+          if (e.key === 'Escape' && landingMenu.classList.contains('open')) {
+            landingMenu.classList.remove('open');
+            landingToggle.setAttribute('aria-expanded', 'false');
+            landingToggle.focus();
+          }
+        });
+      }
+
+      /* --- Sticky nav glass effect on scroll --- */
+      const nav = document.getElementById('landing-nav');
+      if (nav) {
+        const onScroll = () => {
+          nav.classList.toggle('scrolled', window.scrollY > 20);
+        };
+        window.addEventListener('scroll', onScroll, { passive: true });
+        onScroll();
+      }
+
+      document.querySelectorAll('.hero-entrance').forEach(el => {
+        el.classList.add('visible');
+      });
+
+      /* --- Scroll-reveal with IntersectionObserver --- */
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      if (!prefersReducedMotion && 'IntersectionObserver' in window) {
+        const revealObserver = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('visible');
+              revealObserver.unobserve(entry.target);
+            }
+          });
+        }, {
+          threshold: 0.12,
+          rootMargin: '0px 0px -40px 0px'
+        });
+
+        document.querySelectorAll('.reveal').forEach(el => {
+          revealObserver.observe(el);
+        });
+      } else {
+        /* Reduced motion or no IntersectionObserver: show everything */
+        document.querySelectorAll('.reveal').forEach(el => {
+          el.classList.add('visible');
+        });
+        document.querySelectorAll('.hero-entrance').forEach(el => {
+          el.classList.add('visible');
+        });
+      }
+
+      /* --- Smooth scroll for anchor links (fallback for older browsers) --- */
+      document.querySelectorAll('.landing-nav-links a[href^="#"], .landing-cta a[href^="#"]').forEach(a => {
+        a.addEventListener('click', function (e) {
+          const target = document.querySelector(this.getAttribute('href'));
+          if (target) {
+            e.preventDefault();
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        });
+      });
+
+    })();
+  </script>
+</body>
+</html>
