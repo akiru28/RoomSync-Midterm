@@ -1,4 +1,5 @@
 const { getConnection } = require('../config/database');
+const { toMySqlUtcDateTime } = require('../utils/dateUtils');
 
 const ROOM_COLUMNS = `
   id, name, code, type, capacity, location, features, description,
@@ -63,11 +64,10 @@ async function create(data) {
 
 async function update(id, patch) {
   const fields = { name: 'name', code: 'code', type: 'type', capacity: 'capacity', location: 'location',
-    description: 'description', isActive: 'is_active' };
+    description: 'description', isActive: 'is_active', features: 'features' };
   const entries = Object.entries(patch || {}).filter(([key]) => fields[key]);
-  if (Object.prototype.hasOwnProperty.call(patch || {}, 'features')) entries.push(['features', 'features']);
   if (!entries.length) return findById(id);
-  const assignments = entries.map(([key]) => `${fields[key] || key} = ?`).join(', ');
+  const assignments = entries.map(([key]) => `${fields[key]} = ?`).join(', ');
   const values = entries.map(([key, value]) => key === 'features'
     ? JSON.stringify(Array.isArray(value) ? value : []) : value);
   const [result] = await getConnection().execute(
@@ -84,7 +84,7 @@ async function remove(id) {
 
 async function findAvailable(start, end, roomId) {
   const roomClause = roomId == null ? '' : 'AND r.id = ?';
-  const params = roomId == null ? [end, start] : [end, start, roomId];
+  const params = roomId == null ? [toMySqlUtcDateTime(end), toMySqlUtcDateTime(start)] : [roomId, toMySqlUtcDateTime(end), toMySqlUtcDateTime(start)];
   const [rows] = await getConnection().execute(
     `SELECT ${ROOM_COLUMNS} FROM rooms r
      WHERE r.is_active = TRUE

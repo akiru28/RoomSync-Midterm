@@ -64,6 +64,57 @@ test('reservation schedule is exposed through the service with normalized filter
   assert.equal(entries[0].status, 'approved');
 });
 
+test('same-status reservation updates still require authorization', async (t) => {
+  const reservationRepo = require('../../src/repositories/reservationRepository');
+  const originalFindById = reservationRepo.findById;
+  const originalUpdateStatus = reservationRepo.updateStatus;
+  reservationRepo.findById = async () => ({ id: 'res-1', userId: 'user-1', status: 'approved' });
+  reservationRepo.updateStatus = async () => {
+    throw new Error('updateStatus should not be called for unauthorized idempotent updates');
+  };
+  t.after(() => {
+    reservationRepo.findById = originalFindById;
+    reservationRepo.updateStatus = originalUpdateStatus;
+  });
+
+  const service = require('../../src/services/reservationService');
+  await assert.rejects(
+    service.updateStatus('res-1', 'approved', { id: 'student-2', role: 'student' }),
+    { status: 403 }
+  );
+});
+
+test('room feature patches keep the submitted feature list intact', async (t) => {
+  const databasePath = require.resolve('../../src/config/database');
+  const roomRepoPath = require.resolve('../../src/repositories/roomRepository');
+  delete require.cache[databasePath];
+  delete require.cache[roomRepoPath];
+  const freshDatabase = require('../../src/config/database');
+  const originalGetConnection = freshDatabase.getConnection;
+  const calls = [];
+  freshDatabase.getConnection = () => ({
+    execute: async (sql, params) => {
+      calls.push({ sql, params });
+      if (sql.startsWith('UPDATE rooms SET')) {
+        return [{ affectedRows: 1 }];
+      }
+      return [[{ id: 9, features: ['Projector'] }]];
+    },
+  });
+
+  const roomRepo = require('../../src/repositories/roomRepository');
+  t.after(() => {
+    freshDatabase.getConnection = originalGetConnection;
+    delete require.cache[roomRepoPath];
+    delete require.cache[databasePath];
+  });
+
+  const updated = await roomRepo.update(9, { features: ['Projector'] });
+  assert.deepEqual(updated.features, ['Projector']);
+  assert.ok(calls.some((entry) => entry.sql.includes('features = ?')));
+  assert.equal(calls[0].params[0], JSON.stringify(['Projector']));
+});
+
 test('laboratory reports enforce Lab Tech submission and owner-only access', async (t) => {
   const roomRepo = require('../../src/repositories/roomRepository');
   const equipmentRepo = require('../../src/repositories/equipmentRepository');

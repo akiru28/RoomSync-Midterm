@@ -9,13 +9,13 @@ function registerSchema(payload) {
   }
 
   const name = typeof payload.name === 'string' ? payload.name.trim() : '';
-  if (name.length < 2) {
-    return { error: 'Name must be at least 2 characters.', value: null };
+  if (name.length < 2 || name.length > 150) {
+    return { error: 'Name must be between 2 and 150 characters.', value: null };
   }
 
   const email = typeof payload.email === 'string' ? payload.email.trim().toLowerCase() : '';
-  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    return { error: 'A valid email address is required.', value: null };
+  if (!email || email.length > 150 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return { error: 'A valid email address no longer than 150 characters is required.', value: null };
   }
 
   const password = typeof payload.password === 'string' ? payload.password : '';
@@ -24,6 +24,9 @@ function registerSchema(payload) {
   }
 
   const department = typeof payload.department === 'string' ? payload.department.trim() : '';
+  if (department.length > 150) {
+    return { error: 'Department must not exceed 150 characters.', value: null };
+  }
 
   return {
     error: null,

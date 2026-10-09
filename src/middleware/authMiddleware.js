@@ -4,7 +4,8 @@ const userRepository = require('../repositories/userRepository');
 const { SESSION_COOKIE, CAN_RESERVE_ROLES, ROLES } = require('../constants/roles');
 const { verifyToken } = require('../utils/generateId');
 
-const DEV_BYPASS_TOKEN = 'dev-bypass-admin-token';
+const DEV_BYPASS_TOKEN = process.env.DEV_BYPASS_TOKEN || null;
+const DEV_BYPASS_ENABLED = env.nodeEnv !== 'production' && typeof DEV_BYPASS_TOKEN === 'string' && DEV_BYPASS_TOKEN.length > 0;
 
 function parseCookies(req) {
   if (req.cookies) return req.cookies;
@@ -45,7 +46,7 @@ async function authenticate(req, res, next) {
     return error(res, 'Authentication required.', 401);
   }
 
-  if ((env.nodeEnv === 'development' || env.nodeEnv === 'dev') && token === DEV_BYPASS_TOKEN) {
+  if (DEV_BYPASS_ENABLED && token === DEV_BYPASS_TOKEN) {
     req.user = {
       id: 'dev-bypass-admin',
       name: 'Dev Bypass',
@@ -78,7 +79,7 @@ async function pageAuthenticate(req, res, next) {
     req.user = null;
     return next();
   }
-  if ((env.nodeEnv === 'development' || env.nodeEnv === 'dev') && token === DEV_BYPASS_TOKEN) {
+  if (DEV_BYPASS_ENABLED && token === DEV_BYPASS_TOKEN) {
     req.user = {
       id: 'dev-bypass-admin',
       name: 'Dev Bypass',

@@ -20,7 +20,7 @@ router.get('/:id', roomController.get);
  * GET /api/rooms/:id/availability
  */
 router.get('/:id/availability', roomController.availability);
-router.get('/:id/equipment', equipmentController.list);
+router.get('/:id/equipment', authenticate, equipmentController.list);
 
 /**
  * POST /api/rooms (admin)

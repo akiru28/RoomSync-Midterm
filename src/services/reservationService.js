@@ -134,14 +134,6 @@ async function updateStatus(id, status, actor) {
 
   const prevStatus = reservation.status;
   const next = String(status).toLowerCase();
-  if (prevStatus === next) return reservation;
-
-  const allowed = STATUS_TRANSITIONS[prevStatus] || [];
-  if (!allowed.includes(next)) {
-    const err = new Error(`Cannot transition from ${prevStatus} to ${next}.`);
-    err.status = 400;
-    throw err;
-  }
 
   const isOwner = actor && String(reservation.userId) === String(actor.id);
   const isAdmin = actor && CAN_APPROVE_ROLES.includes(actor.role);
@@ -157,7 +149,21 @@ async function updateStatus(id, status, actor) {
     throw err;
   }
 
-  const updated = await reservationRepo.updateStatus(id, next, actor ? actor.id : undefined);
+  if (prevStatus === next) return reservation;
+
+  const allowed = STATUS_TRANSITIONS[prevStatus] || [];
+  if (!allowed.includes(next)) {
+    const err = new Error(`Cannot transition from ${prevStatus} to ${next}.`);
+    err.status = 400;
+    throw err;
+  }
+
+  const updated = await reservationRepo.updateStatus(id, next, actor ? actor.id : undefined, prevStatus);
+  if (!updated) {
+    const err = new Error('Reservation status changed before this update could be applied.');
+    err.status = 409;
+    throw err;
+  }
   await notificationService.onStatusChanged(updated, prevStatus, sanitize(actor));
   return updated;
 }

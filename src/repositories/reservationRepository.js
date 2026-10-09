@@ -254,13 +254,27 @@ async function remove(id) {
   return result.affectedRows > 0;
 }
 
-async function updateStatus(id, status, actorId) {
+async function updateStatus(id, status, actorId, expectedStatus) {
   const patch = { status };
   if (status === 'approved') {
     patch.approvedBy = actorId || null;
     patch.approvedAt = new Date();
   }
-  return update(id, patch);
+
+  const entries = Object.entries(patch).filter(([key]) => RESERVATION_UPDATE_COLUMNS[key]);
+  const assignments = entries.map(([key]) => `${RESERVATION_UPDATE_COLUMNS[key]} = ?`).join(', ');
+  const values = entries.map(([key, value]) =>
+    key === 'startDate' || key === 'endDate' || key === 'approvedAt'
+      ? (key === 'approvedAt' ? toMySqlUtcDateTime(value) : toMySqlUtcDateTime(value))
+      : value
+  );
+
+  const sql = `UPDATE reservations SET ${assignments}, updated_at = CURRENT_TIMESTAMP` +
+    (expectedStatus ? ' WHERE id = ? AND status = ?' : ' WHERE id = ?');
+  const params = expectedStatus ? [...values, id, expectedStatus] : [...values, id];
+  const [result] = await getConnection().execute(sql, params);
+  if (!result.affectedRows) return null;
+  return findById(id);
 }
 
 async function count(filter) {

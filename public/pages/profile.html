@@ -158,12 +158,12 @@
           const mine = await window.Api.get('/reservations');
           const pending = mine.filter(r => r.status === 'pending').length;
           const approved = mine.filter(r => r.status === 'approved').length;
-          if (stats) stats.innerHTML = `
+          if (stats)           const memberSince = user.createdAt ? new Date(user.createdAt) : new Date();
+          stats.innerHTML = `
             <li>My Reservations <strong class="stat-num">${mine.length}</strong></li>
             <li>Pending <strong style="color:var(--warning)">${pending}</strong></li>
             <li>Approved <strong style="color:var(--success)">${approved}</strong></li>
-            <li>Member since <strong style="font-size:.9rem">${window.formatDateShort(new Date())}</strong></li>`;
-        } catch (err) {
+            <li>Member since <strong style="font-size:.9rem">${window.formatDateShort(memberSince)}</strong></li>`;        } catch (err) {
           if (stats) stats.textContent = `Unable to load account activity: ${err.message}`;
         } finally {
           stats?.setAttribute('aria-busy', 'false');

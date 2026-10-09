@@ -32,13 +32,18 @@ async function updateMe(req, res, next) {
     if (!req.user) return error(res, 'Authentication required.', 401);
     const patch = {};
     if (typeof req.body.name === 'string' && req.body.name.trim()) {
-      patch.name = req.body.name.trim();
+      const name = req.body.name.trim();
+      if (name.length > 150) return error(res, 'Name must not exceed 150 characters.', 400);
+      patch.name = name;
     }
     if (typeof req.body.department === 'string') {
-      patch.department = req.body.department.trim();
+      const department = req.body.department.trim();
+      if (department.length > 150) return error(res, 'Department must not exceed 150 characters.', 400);
+      patch.department = department;
     }
     if (typeof req.body.password === 'string' && req.body.password.length >= 4) {
       patch.password = await bcrypt.hash(req.body.password, 12);
+      patch.token = null;
     }
     const updated = await userRepo.update(req.user.id, patch);
     return success(res, sanitize(updated), 'Profile updated.');

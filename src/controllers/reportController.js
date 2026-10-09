@@ -21,9 +21,17 @@ async function utilization(req, res, next) {
     const reservations = await reservationRepo.findByDateRange(from, to);
     const MINUTES_PER_DAY_OPEN = 12 * 60;
     const totalMinutes = days * MINUTES_PER_DAY_OPEN;
+    const activeStatuses = new Set([RESERVATION_STATUSES.APPROVED, RESERVATION_STATUSES.COMPLETED]);
     const perRoom = rooms.map((r) => {
-      const mine = reservations.filter((rv) => String(rv.roomId) === String(r.id));
-      const reserved = mine.reduce((sum, rv) => sum + Math.max(0, diffInMinutes(rv.startDate, rv.endDate)), 0);
+      const mine = reservations.filter((rv) => String(rv.roomId) === String(r.id) && activeStatuses.has(rv.status));
+      const reserved = mine.reduce((sum, rv) => {
+        const start = new Date(Math.max(new Date(rv.startDate).getTime(), from.getTime()));
+        const end = new Date(Math.min(new Date(rv.endDate).getTime(), to.getTime()));
+        if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime()) || start >= end) {
+          return sum;
+        }
+        return sum + Math.max(0, diffInMinutes(start, end));
+      }, 0);
       const pct = totalMinutes > 0 ? Math.min(100, (reserved / totalMinutes) * 100) : 0;
       return {
         roomId: r.id,
@@ -93,6 +101,13 @@ async function userActivity(req, res, next) {
  * @param {import('express').Request} req
  * @param {import('express').Response} res
  */
+function escapeCsvCell(value) {
+  const raw = String(value ?? '');
+  const escaped = raw.replace(/\r\n|\r|\n/g, ' ').replace(/\t/g, ' ');
+  const safe = /^[=+\-@]/.test(escaped) ? `'${escaped}` : escaped;
+  return `"${safe.replace(/"/g, '""')}"`;
+}
+
 async function exportCsv(req, res, next) {
   try {
     const rows = [['id', 'roomName', 'userName', 'purpose', 'startDate', 'endDate', 'status']];
@@ -100,7 +115,7 @@ async function exportCsv(req, res, next) {
     all.forEach((r) => {
       rows.push([r.id, r.roomName, r.userName, r.purpose, r.startDate, r.endDate, r.status]);
     });
-    const csv = rows.map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\n');
+    const csv = rows.map((r) => r.map(escapeCsvCell).join(',')).join('\n');
     res.setHeader('Content-Type', 'text/csv; charset=utf-8');
     res.setHeader('Content-Disposition', 'attachment; filename="reservations.csv"');
     return res.send(csv);
